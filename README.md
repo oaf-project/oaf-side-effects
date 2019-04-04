@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/danielnixon/oaf-side-effects.svg?branch=master)](https://travis-ci.org/danielnixon/oaf-side-effects)
 [![Known Vulnerabilities](https://snyk.io/test/github/danielnixon/oaf-side-effects/badge.svg?targetFile=package.json)](https://snyk.io/test/github/danielnixon/oaf-side-effects?targetFile=package.json)
+[![Greenkeeper badge](https://badges.greenkeeper.io/danielnixon/oaf-side-effects.svg)](https://greenkeeper.io/)
 
 # Oaf Side Effects
 
