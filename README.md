@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/danielnixon/oaf-side-effects.svg?branch=master)](https://travis-ci.org/danielnixon/oaf-side-effects)
+
 # Oaf Side Effects
 
 A collection of DOM side-effecting functions to improve the accessibility and usability of single page apps.
