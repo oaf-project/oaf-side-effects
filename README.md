@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/danielnixon/oaf-side-effects.svg?branch=master)](https://travis-ci.org/danielnixon/oaf-side-effects)
+[![Build Status](https://travis-ci.org/danielnixon/oaf-side-effects.svg?branch=master)](https://travis-ci.org/danielnixon/oaf-side-effects) [![Greenkeeper badge](https://badges.greenkeeper.io/danielnixon/oaf-side-effects.svg)](https://greenkeeper.io/)
 
 # Oaf Side Effects
 
