@@ -1,0 +1,32 @@
+{
+  "name": "oaf-side-effects",
+  "version": "0.3.0",
+  "main": "dist",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielnixon/oaf-side-effects.git"
+  },
+  "devDependencies": {
+    "prettier": "^1.16.4",
+    "prettylint": "^1.0.0",
+    "tslint": "^5.15.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-immutable": "^5.5.2",
+    "tslint-sonarts": "^1.9.0",
+    "type-coverage": "^1.12.0",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.4.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "type-coverage": "type-coverage --at-least 98",
+    "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
+    "format-lint": "prettylint '{src,test}/**/*.{ts,tsx}'",
+    "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src"
+  },
+  "prettier": {
+    "trailingComma": "all"
+  }
+}
