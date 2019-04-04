@@ -24,7 +24,8 @@
     "type-coverage": "type-coverage --at-least 98",
     "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
     "format-lint": "prettylint '{src,test}/**/*.{ts,tsx}'",
-    "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src"
+    "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src && cp docs_config.yml ./docs/_config.yml",
+    "publish": "yarn build && yarn lint && yarn type-coverage && yarn format-lint && yarn publish"
   },
   "prettier": {
     "trailingComma": "all"
