@@ -7,7 +7,7 @@
 
 A collection of DOM side-effecting functions to improve the accessibility and usability of single page apps.
 
-Documentation at https://danielnixon.github.io/oaf-side-effects/
+Documentation at https://oaf-project.github.io/oaf-side-effects/
 
 ## Installation
 
