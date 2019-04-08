@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/danielnixon/oaf-side-effects.svg?branch=master)](https://travis-ci.org/danielnixon/oaf-side-effects)
+[![Build Status](https://travis-ci.org/oaf-project/oaf-side-effects.svg?branch=master)](https://travis-ci.org/oaf-project/oaf-side-effects)
 [![Known Vulnerabilities](https://snyk.io/test/github/danielnixon/oaf-side-effects/badge.svg?targetFile=package.json)](https://snyk.io/test/github/danielnixon/oaf-side-effects?targetFile=package.json)
 [![Greenkeeper badge](https://badges.greenkeeper.io/danielnixon/oaf-side-effects.svg)](https://greenkeeper.io/)
 [![npm](https://img.shields.io/npm/v/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
