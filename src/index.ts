@@ -122,17 +122,38 @@ export const getScrollPosition = (): ScrollPosition => {
   return { x, y };
 };
 
-export const setScrollPosition = (scrollPosition: ScrollPosition): void =>
-  window.scrollTo(scrollPosition.x, scrollPosition.y);
+export const setScrollPosition = (scrollPosition: ScrollPosition): void => {
+  // we want this to be instant and imperceptible to the user, so we
+  // explicitly set `behavior: "auto"` as opposed to `smooth`.
+  window.scrollTo({
+    behavior: "auto",
+    left: scrollPosition.x,
+    top: scrollPosition.y,
+  });
+};
 
 /**
- * Executes a function that may change the window's scroll position
- * and then restores the window scroll position.
+ * Executes a function that may (undesirably) change the window's scroll position
+ * and then restores the window scroll position and scroll behavior.
  * @param func a function to execute
  */
 const withRestoreScrollPosition = <T>(func: () => T): Promise<T> => {
   const originalScrollPosition = getScrollPosition();
+  // See https://caniuse.com/#search=css-scroll-behavior
+  const originalScrollBehavior =
+    "scrollBehavior" in document.documentElement.style
+      ? (document.documentElement.style.scrollBehavior as ScrollBehavior)
+      : undefined;
+
+  // Just in case `scroll-behavior: smooth` is set via CSS, set it to auto
+  // temporarily to help ensure this scroll is imperceptible.
+  // This is not required in Chrome but it is in Firefox and perhaps elsewhere.
+  if (originalScrollBehavior === "smooth") {
+    window.document.documentElement.style.scrollBehavior = "auto";
+  }
+
   const result = func();
+
   // See https://github.com/calvellido/focus-options-polyfill/blob/master/index.js
   // HACK: It seems that we have to call window.scrollTo() twice--once
   // immediately after focus and then again in a setTimeout()--to prevent
@@ -141,6 +162,12 @@ const withRestoreScrollPosition = <T>(func: () => T): Promise<T> => {
   return new Promise(resolve => {
     setTimeout(() => {
       setScrollPosition(originalScrollPosition);
+
+      // After we're done scrolling set scrollBehavior back to its original value.
+      if (originalScrollBehavior === "smooth") {
+        window.document.documentElement.style.scrollBehavior = originalScrollBehavior;
+      }
+
       resolve(result);
     });
   });
@@ -259,20 +286,29 @@ export const focusAndScrollIntoViewIfRequired = async (
   // See https://stackoverflow.com/questions/4963053/focus-to-input-without-scrolling/6610501
 
   // Focus the element for keyboard users and users of assistive technology.
-  const result =
+  const result: boolean =
     elementToFocus !== undefined
       ? await focusElement(
           elementToFocus,
           focusOptions || { preventScroll: true },
         )
-      : Promise.resolve(false);
+      : false;
 
   if (elementToScrollIntoView !== undefined) {
     // For screen users, scroll the element into view.
-    // TODO: don't use smooth scrolling if user agent prefers reduced motion?
+    // Don't use smooth scrolling if user prefers reduced motion.
+    // See https://caniuse.com/#feat=matchmedia
+    // See https://gomakethings.com/smooth-scrolling-links-with-only-css/
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const defaultScrollOptions: ScrollOptions = prefersReducedMotion
+      ? { behavior: "auto" }
+      : { behavior: "smooth" };
+
     scrollIntoViewIfRequired(
       elementToScrollIntoView,
-      scrollIntoViewOptions || { behavior: "smooth" },
+      scrollIntoViewOptions || defaultScrollOptions,
     );
   }
 
