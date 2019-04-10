@@ -45,6 +45,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
   }
   switch (hash) {
     case "#":
+      // TODO document.documentElement?
       return document.body;
     case "":
       return undefined;
@@ -53,6 +54,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
       if (element !== null) {
         return element;
       } else if (hash === "#top") {
+        // TODO document.documentElement?
         return document.body;
       } else {
         return undefined;
@@ -346,12 +348,14 @@ const createAnnounceDiv = (announceDivId: string): HTMLDivElement => {
 export const announce = (
   message: string,
   announcementsDivId: string = "announcements",
+  setMessageTimeout: number = 50,
+  clearMessageTimeout: number = 500,
 ): void => {
   const announceDiv =
     document.getElementById(announcementsDivId) ||
     createAnnounceDiv(announcementsDivId);
-  setTimeout(() => (announceDiv.innerText = message), 50);
-  setTimeout(() => (announceDiv.innerText = ""), 500);
+  setTimeout(() => (announceDiv.innerText = message), setMessageTimeout);
+  setTimeout(() => (announceDiv.innerText = ""), clearMessageTimeout);
 };
 
 /**
