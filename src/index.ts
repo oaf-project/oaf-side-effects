@@ -132,45 +132,73 @@ export const setScrollPosition = (scrollPosition: ScrollPosition): void => {
   });
 };
 
+const getScrollPositionRestorer = (): (() => Promise<void>) => {
+  const scrollPosition = getScrollPosition();
+
+  return () => {
+    // See https://github.com/calvellido/focus-options-polyfill/blob/master/index.js
+    // HACK: It seems that we have to call window.scrollTo() twice--once
+    // immediately after focus and then again in a setTimeout()--to prevent
+    // Firefox from bouncing around the page. TODO: Revisit this.
+    setScrollPosition(scrollPosition);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        setScrollPosition(scrollPosition);
+        resolve();
+      });
+    });
+  };
+};
+
+const disableSmoothScroll = (): (() => void) => {
+  // See https://caniuse.com/#search=css-scroll-behavior
+  // See https://caniuse.com/#search=getcomputedstyle
+  const scrollElements =
+    typeof window.getComputedStyle === "function"
+      ? [window.document.documentElement, window.document.body]
+      : [];
+  const smoothScrollElements = scrollElements
+    .filter(
+      e => e !== null && window.getComputedStyle(e).scrollBehavior === "smooth",
+    )
+    .map(e => ({ element: e, originalScrollBehavior: e.style.scrollBehavior }));
+  smoothScrollElements.forEach(
+    ({ element }) => (element.style.scrollBehavior = "auto"),
+  );
+
+  // Return a function that will put things back the way we found them.
+  return () => {
+    smoothScrollElements.forEach(
+      ({ element, originalScrollBehavior }) =>
+        (element.style.scrollBehavior = originalScrollBehavior),
+    );
+  };
+};
+
 /**
  * Executes a function that may (undesirably) change the window's scroll position
  * and then restores the window scroll position and scroll behavior.
- * @param func a function to execute
+ * @param funcWithScrollSideEffect a function to execute that may (undesirably) change the window's scroll position
  */
-const withRestoreScrollPosition = <T>(func: () => T): Promise<T> => {
-  const originalScrollPosition = getScrollPosition();
-  // See https://caniuse.com/#search=css-scroll-behavior
-  const originalScrollBehavior =
-    "scrollBehavior" in document.documentElement.style
-      ? (document.documentElement.style.scrollBehavior as ScrollBehavior)
-      : undefined;
+const withRestoreScrollPosition = async <T>(
+  funcWithScrollSideEffect: () => T,
+): Promise<T> => {
+  const restoreScrollPosition = getScrollPositionRestorer();
 
   // Just in case `scroll-behavior: smooth` is set via CSS, set it to auto
-  // temporarily to help ensure this scroll is imperceptible.
+  // temporarily to help ensure that the scrolling caused by
+  // `funcWithScrollSideEffect` and `restoreScrollPosition` is imperceptible.
   // This is not required in Chrome but it is in Firefox and perhaps elsewhere.
-  if (originalScrollBehavior === "smooth") {
-    window.document.documentElement.style.scrollBehavior = "auto";
-  }
+  const restoreScrollBehavior = disableSmoothScroll();
 
-  const result = func();
+  const result = funcWithScrollSideEffect();
 
-  // See https://github.com/calvellido/focus-options-polyfill/blob/master/index.js
-  // HACK: It seems that we have to call window.scrollTo() twice--once
-  // immediately after focus and then again in a setTimeout()--to prevent
-  // Firefox from bouncing around the page. TODO: Revisit this.
-  setScrollPosition(originalScrollPosition);
-  return new Promise(resolve => {
-    setTimeout(() => {
-      setScrollPosition(originalScrollPosition);
+  await restoreScrollPosition();
 
-      // After we're done scrolling set scrollBehavior back to its original value.
-      if (originalScrollBehavior === "smooth") {
-        window.document.documentElement.style.scrollBehavior = originalScrollBehavior;
-      }
+  // After we're done scrolling set scrollBehavior back to its original value.
+  restoreScrollBehavior();
 
-      resolve(result);
-    });
-  });
+  return result;
 };
 
 /**
@@ -189,7 +217,7 @@ const withRestoreScrollPosition = <T>(func: () => T): Promise<T> => {
  * @param target the element to focus.
  * @param options focus options.
  */
-export const focusElement = (
+export const focusElement = async (
   target: Target,
   options?: FocusOptions,
 ): Promise<boolean> => {
@@ -219,14 +247,13 @@ export const focusElement = (
     element.addEventListener("blur", blurListener);
   }
 
-  const focus = (): true => {
+  const focus = (): void => {
     // TODO: looks like `element.focus(undefined)` is no good in IE 11. Confirm this.
     if (options !== undefined) {
       element.focus(options);
     } else {
       element.focus();
     }
-    return true;
   };
 
   if (
@@ -235,10 +262,12 @@ export const focusElement = (
     options.preventScroll === true
   ) {
     // preventScroll has poor browser support, so we restore scroll manually after setting focus.
-    return withRestoreScrollPosition(focus);
+    await withRestoreScrollPosition(focus);
   } else {
-    return Promise.resolve(focus());
+    focus();
   }
+
+  return true;
 };
 
 /**
