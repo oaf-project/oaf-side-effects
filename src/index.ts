@@ -45,8 +45,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
   }
   switch (hash) {
     case "#":
-      // TODO document.documentElement?
-      return document.body;
+      return document.documentElement || document.body.parentElement || document.body;
     case "":
       return undefined;
     default:
@@ -54,8 +53,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
       if (element !== null) {
         return element;
       } else if (hash === "#top") {
-        // TODO document.documentElement?
-        return document.body;
+        return document.documentElement || document.body.parentElement || document.body
       } else {
         return undefined;
       }
