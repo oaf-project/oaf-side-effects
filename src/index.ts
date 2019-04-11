@@ -353,7 +353,7 @@ export const focusAndScrollIntoViewIfRequired = async (
  * e.g. `[main h1]`. This is the element that will receive focus after SPA
  * navigation. If this element does not exist the document body will be used
  * as a fallback.
- * @param focusSelector a CSS selector for the element to focus. If this
+ * @param focusTarget the element to focus. If this
  * element does not exist the primaryFocusTarget will be used as a fallback.
  */
 export const resetFocus = (
