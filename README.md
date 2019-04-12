@@ -3,6 +3,10 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/oaf-project/oaf-side-effects.svg)](https://greenkeeper.io/)
 [![npm](https://img.shields.io/npm/v/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
 
+[![dependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/status.svg)](https://david-dm.org/oaf-project/oaf-side-effects)
+[![devDependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/dev-status.svg)](https://david-dm.org/oaf-project/oaf-side-effects?type=dev)
+[![peerDependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/peer-status.svg)](https://david-dm.org/oaf-project/oaf-side-effects?type=peer)
+
 # Oaf Side Effects
 
 A collection of DOM side-effecting functions to improve the accessibility and usability of single page apps.
