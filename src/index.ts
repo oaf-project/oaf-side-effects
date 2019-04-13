@@ -116,12 +116,13 @@ export const elementFromTarget = (
   return target instanceof Element ? target : querySelector(target, parent);
 };
 
+const documentElement =
+  document.documentElement || document.body.parentNode || document.body;
+
 export const getScrollPosition = (): ScrollPosition => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollX#Notes
-  const scrollElement =
-    document.documentElement || document.body.parentNode || document.body;
-  const x = window.scrollX || window.pageXOffset || scrollElement.scrollLeft;
-  const y = window.scrollY || window.pageYOffset || scrollElement.scrollTop;
+  const x = window.scrollX || window.pageXOffset || documentElement.scrollLeft;
+  const y = window.scrollY || window.pageYOffset || documentElement.scrollTop;
 
   return { x, y };
 };
@@ -355,7 +356,7 @@ export const focusAndScrollIntoViewIfRequired = async (
  *
  * @param primaryFocusTarget a CSS selector for your primary focus target,
  * e.g. `[main h1]`. This is the element that will receive focus after SPA
- * navigation. If this element does not exist the document body will be used
+ * navigation. If this element does not exist the document element will be used
  * as a fallback.
  * @param focusTarget the element to focus. If this
  * element does not exist the primaryFocusTarget will be used as a fallback.
@@ -369,7 +370,7 @@ export const resetFocus = (
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
   const targetElement =
-    elementToFocus || elementFromTarget(primaryFocusTarget) || document.body;
+    elementToFocus || elementFromTarget(primaryFocusTarget) || documentElement;
   return focusAndScrollIntoViewIfRequired(
     targetElement,
     targetElement,
