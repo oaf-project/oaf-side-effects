@@ -8,7 +8,7 @@
     "url": "https://github.com/danielnixon/oaf-side-effects.git"
   },
   "devDependencies": {
-    "prettier": "^1.16.4",
+    "prettier": "^1.17.0",
     "prettylint": "^1.0.0",
     "tslint": "^5.15.0",
     "tslint-config-prettier": "^1.18.0",
