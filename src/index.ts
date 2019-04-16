@@ -276,6 +276,36 @@ export const focusElement = async (
 };
 
 /**
+ * Scrolls an element into view.
+ *
+ * For smooth scrolling behavior you might want to use the smoothscroll
+ * polyfill http://iamdustan.com/smoothscroll/
+ *
+ * @param target the element to scroll into view
+ * @param options controls how the scroll is executed
+ */
+export const scrollIntoView = (
+  element: Element,
+  options?: ScrollIntoViewOptions,
+) => {
+  if (options !== undefined) {
+    try {
+      element.scrollIntoView(options);
+    } catch (e) {
+      // If smooth scrolling throws, try non-smooth scrolling as fallback.
+      // See https://github.com/iamdustan/smoothscroll/issues/138
+      if (options.behavior === "smooth") {
+        element.scrollIntoView();
+      } else {
+        throw e;
+      }
+    }
+  } else {
+    element.scrollIntoView();
+  }
+};
+
+/**
  * Scrolls an element into view if it is not currently visible.
  *
  * For smooth scrolling behavior you might want to use the smoothscroll
@@ -291,11 +321,7 @@ export const scrollIntoViewIfRequired = (
 ): void => {
   const element = elementFromTarget(target);
   if (element !== undefined && !(inViewport || isInViewport)(element)) {
-    if (options !== undefined) {
-      element.scrollIntoView(options);
-    } else {
-      element.scrollIntoView();
-    }
+    scrollIntoView(element, options);
   }
 };
 
