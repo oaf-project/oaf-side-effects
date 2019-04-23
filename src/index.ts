@@ -127,14 +127,20 @@ export const getScrollPosition = (): ScrollPosition => {
   return { x, y };
 };
 
+/**
+ * Scrolls the window to the given scroll position.
+ * @param scrollPosition the scroll position to scroll to
+ */
 export const setScrollPosition = (scrollPosition: ScrollPosition): void => {
-  // we want this to be instant and imperceptible to the user, so we
-  // explicitly set `behavior: "auto"` as opposed to `smooth`.
-  window.scrollTo({
-    behavior: "auto",
-    left: scrollPosition.x,
-    top: scrollPosition.y,
-  });
+  // We want this to be instant and imperceptible to the user so we would
+  // prefer to use the form of scrollTo() that takes an object and explicitly
+  // set `behavior: "auto"` (as opposed to `smooth`) but that has browser
+  // compatibility issues. We should avoid smooth scrolling here anyway (even
+  // without `behavior: "auto"`) courtesy of disableSmoothScroll().
+  // See https://github.com/Fyrd/caniuse/issues/1760
+  // See https://github.com/frontarm/navi/issues/71
+  // See https://github.com/frontarm/navi/pull/84/files
+  window.scrollTo(scrollPosition.x, scrollPosition.y);
 };
 
 const getScrollPositionRestorer = (): (() => Promise<void>) => {
@@ -252,24 +258,16 @@ export const focusElement = async (
     element.addEventListener("blur", blurListener);
   }
 
-  const focus = (): void => {
-    // TODO: looks like `element.focus(undefined)` is no good in IE 11. Confirm this.
-    if (options !== undefined) {
-      element.focus(options);
-    } else {
-      element.focus();
-    }
-  };
-
   if (
     options !== undefined &&
     typeof options === "object" &&
     options.preventScroll === true
   ) {
     // preventScroll has poor browser support, so we restore scroll manually after setting focus.
-    await withRestoreScrollPosition(focus);
+    await withRestoreScrollPosition(() => element.focus(options));
   } else {
-    focus();
+    // Avoid passing anything to focus() (when we can) to maximize browser compatibility.
+    element.focus();
   }
 
   return true;
@@ -288,17 +286,17 @@ export const scrollIntoView = (
   element: Element,
   options?: ScrollIntoViewOptions,
 ) => {
-  if (options !== undefined) {
+  if (
+    options !== undefined &&
+    typeof options === "object" &&
+    options.behavior === "smooth"
+  ) {
     try {
       element.scrollIntoView(options);
     } catch (e) {
       // If smooth scrolling throws, try non-smooth scrolling as fallback.
       // See https://github.com/iamdustan/smoothscroll/issues/138
-      if (options.behavior === "smooth") {
-        element.scrollIntoView();
-      } else {
-        throw e;
-      }
+      element.scrollIntoView();
     }
   } else {
     element.scrollIntoView();
