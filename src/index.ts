@@ -264,7 +264,16 @@ export const focusElement = async (
     options.preventScroll === true
   ) {
     // preventScroll has poor browser support, so we restore scroll manually after setting focus.
-    await withRestoreScrollPosition(() => element.focus(options));
+    // TODO detect if browser supports preventScroll and avoid `withRestoreScrollPosition`
+    // shenanigans if so.
+    await withRestoreScrollPosition(() => {
+      try {
+        element.focus(options);
+      } catch {
+        // If focus() with options throws, fall back on calling focus() without any arguments.
+        element.focus();
+      }
+    });
   } else {
     // Avoid passing anything to focus() (when we can) to maximize browser compatibility.
     element.focus();
@@ -293,12 +302,13 @@ export const scrollIntoView = (
   ) {
     try {
       element.scrollIntoView(options);
-    } catch (e) {
+    } catch {
       // If smooth scrolling throws, try non-smooth scrolling as fallback.
       // See https://github.com/iamdustan/smoothscroll/issues/138
       element.scrollIntoView();
     }
   } else {
+    // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
     element.scrollIntoView();
   }
 };
