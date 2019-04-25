@@ -283,33 +283,51 @@ export const focusElement = async (
 };
 
 /**
+ * True if the user prefers reduced motion, false otherwise.
+ */
+export const prefersReducedMotion = () => {
+  // See https://caniuse.com/#feat=matchmedia
+  return (
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+};
+
+/**
  * Scrolls an element into view.
  *
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
- * @param target the element to scroll into view
+ * If the user has indicated that they prefer reduced motion, smooth
+ * scrolling behavior options passed to this function will be ignored.
+ *
+ * @param element the element to scroll into view
  * @param options controls how the scroll is executed
  */
 export const scrollIntoView = (
   element: Element,
   options?: ScrollIntoViewOptions,
 ) => {
-  if (
-    options !== undefined &&
-    typeof options === "object" &&
-    options.behavior === "smooth"
+  // TODO respect block and inline from options object even when not smooth scrolling.
+  if (prefersReducedMotion()) {
+    element.scrollIntoView();
+  } else if (
+    options === undefined ||
+    typeof options !== "object" ||
+    options.behavior === "auto"
   ) {
+    // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
+    element.scrollIntoView();
+  } else {
     try {
       element.scrollIntoView(options);
     } catch {
-      // If smooth scrolling throws, try non-smooth scrolling as fallback.
+      // If scrollIntoView with options throws, fall back on no options.
       // See https://github.com/iamdustan/smoothscroll/issues/138
+      // See https://github.com/frontarm/navi/issues/71
       element.scrollIntoView();
     }
-  } else {
-    // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
-    element.scrollIntoView();
   }
 };
 
@@ -364,20 +382,7 @@ export const focusAndScrollIntoViewIfRequired = async (
 
   if (elementToScrollIntoView !== undefined) {
     // For screen users, scroll the element into view.
-    // Don't use smooth scrolling if user prefers reduced motion.
-    // See https://caniuse.com/#feat=matchmedia
-    // See https://gomakethings.com/smooth-scrolling-links-with-only-css/
-    const prefersReducedMotion =
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const defaultScrollOptions: ScrollOptions = prefersReducedMotion
-      ? { behavior: "auto" }
-      : { behavior: "smooth" };
-
-    scrollIntoViewIfRequired(
-      elementToScrollIntoView,
-      scrollIntoViewOptions || defaultScrollOptions,
-    );
+    scrollIntoViewIfRequired(elementToScrollIntoView, scrollIntoViewOptions);
   }
 
   return Promise.resolve(result);
