@@ -248,6 +248,7 @@ export const focusElement = async (
 
   try {
     // Set tabindex="-1" if necessary.
+    // TODO avoid setting tabindex when we're confident we don't need to?
     if (!element.hasAttribute("tabindex")) {
       element.setAttribute("tabindex", "-1");
       // We remove tabindex after blur to avoid weird browser behavior
@@ -280,11 +281,7 @@ export const focusElement = async (
       element.focus();
     }
 
-    if (document.activeElement === element) {
-      return true;
-    } else {
-      return false;
-    }
+    return document.activeElement === element;
   } catch (e) {
     // Apparently trying to focus a disabled element in IE can throw.
     // See https://stackoverflow.com/a/1600194/2476884
@@ -387,6 +384,9 @@ export const focusAndScrollIntoViewIfRequired = async (
     elementToFocus !== undefined
       ? await focusElement(
           elementToFocus,
+          // TODO: if scrollIntoViewOptions doesn't specify smooth and
+          // elementToFocus === elementToScrollIntoView then we can
+          // avoid preventScroll shenanigans here.
           focusOptions || { preventScroll: true },
         )
       : false;
@@ -400,18 +400,21 @@ export const focusAndScrollIntoViewIfRequired = async (
 };
 
 /**
- * Resets focus after a SPA page navigation.
+ * Resets focus and scroll position after a SPA page navigation.
+ *
+ * Will attempt to move focus to the focusTarget, primaryFocusTarget,
+ * document element and finally document body, in that order. If any of
+ * those elements do not exist or cannot be focused, will attempt to
+ * focus the next fallback element.
  *
  * See: https://github.com/ReactTraining/react-router/issues/5210
  *
  * @param primaryFocusTarget a CSS selector for your primary focus target,
- * e.g. `[main h1]`. This is the element that will receive focus after SPA
- * navigation. If this element does not exist the document element will be used
- * as a fallback.
- * @param focusTarget the element to focus. If this
- * element does not exist the primaryFocusTarget will be used as a fallback.
+ * e.g. `[main h1]`.
+ * @param focusTarget the element to focus, e.g. the element identified by
+ * the hash fragment of the URL.
  */
-export const resetFocus = (
+export const resetFocus = async (
   primaryFocusTarget: Selector,
   focusTarget?: Target,
   focusOptions?: FocusOptions,
@@ -419,16 +422,34 @@ export const resetFocus = (
 ): Promise<boolean> => {
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
-  const targetElement =
-    elementToFocus || elementFromTarget(primaryFocusTarget) || documentElement;
-  // TODO: if focusing the provided focusTarget fails, we should fall back on the primaryFocusTarget.
-  // If focusing the primaryFocusTarget fails, we should fall back on the documentElement.
-  return focusAndScrollIntoViewIfRequired(
-    targetElement,
-    targetElement,
-    focusOptions,
-    scrollIntoViewOptions,
-  );
+  const primaryFocusElement = elementFromTarget(primaryFocusTarget);
+  const targets: ReadonlyArray<Element | undefined> = [
+    elementToFocus,
+    primaryFocusElement,
+    document.documentElement,
+    document.body,
+  ];
+
+  for (const targetElement of targets) {
+    if (targetElement instanceof Element) {
+      try {
+        const didFocus = await focusAndScrollIntoViewIfRequired(
+          targetElement,
+          targetElement,
+          focusOptions,
+          scrollIntoViewOptions,
+        );
+
+        if (didFocus) {
+          return true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  return false;
 };
 
 const createAnnounceDiv = (announceDivId: string): HTMLDivElement => {
