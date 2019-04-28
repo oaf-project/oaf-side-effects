@@ -246,40 +246,51 @@ export const focusElement = async (
     return Promise.resolve(false);
   }
 
-  // Set tabindex="-1" if necessary.
-  if (!element.hasAttribute("tabindex")) {
-    element.setAttribute("tabindex", "-1");
-    // We remove tabindex after blur to avoid weird browser behavior
-    // where a mouse click can activate elements with tabindex="-1".
-    const blurListener = () => {
-      element.removeAttribute("tabindex");
-      element.removeEventListener("blur", blurListener);
-    };
-    element.addEventListener("blur", blurListener);
-  }
+  try {
+    // Set tabindex="-1" if necessary.
+    if (!element.hasAttribute("tabindex")) {
+      element.setAttribute("tabindex", "-1");
+      // We remove tabindex after blur to avoid weird browser behavior
+      // where a mouse click can activate elements with tabindex="-1".
+      const blurListener = () => {
+        element.removeAttribute("tabindex");
+        element.removeEventListener("blur", blurListener);
+      };
+      element.addEventListener("blur", blurListener);
+    }
 
-  if (
-    options !== undefined &&
-    typeof options === "object" &&
-    options.preventScroll === true
-  ) {
-    // preventScroll has poor browser support, so we restore scroll manually after setting focus.
-    // TODO detect if browser supports preventScroll and avoid `withRestoreScrollPosition`
-    // shenanigans if so.
-    await withRestoreScrollPosition(() => {
-      try {
-        element.focus(options);
-      } catch {
-        // If focus() with options throws, fall back on calling focus() without any arguments.
-        element.focus();
-      }
-    });
-  } else {
-    // Avoid passing anything to focus() (when we can) to maximize browser compatibility.
-    element.focus();
-  }
+    if (
+      options !== undefined &&
+      typeof options === "object" &&
+      options.preventScroll === true
+    ) {
+      // preventScroll has poor browser support, so we restore scroll manually after setting focus.
+      // TODO detect if browser supports preventScroll and avoid `withRestoreScrollPosition`
+      // shenanigans if so.
+      await withRestoreScrollPosition(() => {
+        try {
+          element.focus(options);
+        } catch {
+          // If focus() with options throws, fall back on calling focus() without any arguments.
+          element.focus();
+        }
+      });
+    } else {
+      // Avoid passing anything to focus() (when we can) to maximize browser compatibility.
+      element.focus();
+    }
 
-  return true;
+    if (document.activeElement === element) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    // Apparently trying to focus a disabled element in IE can throw.
+    // See https://stackoverflow.com/a/1600194/2476884
+    console.error(e);
+    return false;
+  }
 };
 
 /**
@@ -410,6 +421,8 @@ export const resetFocus = (
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
   const targetElement =
     elementToFocus || elementFromTarget(primaryFocusTarget) || documentElement;
+  // TODO: if focusing the provided focusTarget fails, we should fall back on the primaryFocusTarget.
+  // If focusing the primaryFocusTarget fails, we should fall back on the documentElement.
   return focusAndScrollIntoViewIfRequired(
     targetElement,
     targetElement,
