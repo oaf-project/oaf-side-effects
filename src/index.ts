@@ -247,7 +247,7 @@ export const focusElement = async (
   }
 
   // Set tabindex="-1" if necessary.
-  if (element.tabIndex === -1 && !element.hasAttribute("tabindex")) {
+  if (!element.hasAttribute("tabindex")) {
     element.setAttribute("tabindex", "-1");
     // We remove tabindex after blur to avoid weird browser behavior
     // where a mouse click can activate elements with tabindex="-1".
