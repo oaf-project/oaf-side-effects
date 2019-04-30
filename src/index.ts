@@ -343,13 +343,17 @@ export const scrollIntoView = (
     // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
     element.scrollIntoView();
   } else {
-    try {
-      element.scrollIntoView(options);
-    } catch {
-      // If scrollIntoView with options throws, fall back on no options.
+    if (element === document.documentElement || element === document.body) {
       // See https://github.com/iamdustan/smoothscroll/issues/138
-      // See https://github.com/frontarm/navi/issues/71
-      element.scrollIntoView();
+      setScrollPosition({ x: 0, y: 0 }, options);
+    } else {
+      try {
+        element.scrollIntoView(options);
+      } catch {
+        // If scrollIntoView with options throws, fall back on no options.
+        // See https://github.com/frontarm/navi/issues/71
+        element.scrollIntoView();
+      }
     }
   }
 };
