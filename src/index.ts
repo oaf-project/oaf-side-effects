@@ -129,18 +129,32 @@ export const getScrollPosition = (): ScrollPosition => {
 
 /**
  * Scrolls the window to the given scroll position.
+ * 
+ * For smooth scrolling behavior you might want to use the smoothscroll
+ * polyfill http://iamdustan.com/smoothscroll/
+ * 
  * @param scrollPosition the scroll position to scroll to
+ * @param options controls how the scroll is executed
  */
-export const setScrollPosition = (scrollPosition: ScrollPosition): void => {
-  // We want this to be instant and imperceptible to the user so we would
-  // prefer to use the form of scrollTo() that takes an object and explicitly
-  // set `behavior: "auto"` (as opposed to `smooth`) but that has browser
-  // compatibility issues. We should avoid smooth scrolling here anyway (even
-  // without `behavior: "auto"`) courtesy of disableSmoothScroll().
-  // See https://github.com/Fyrd/caniuse/issues/1760
-  // See https://github.com/frontarm/navi/issues/71
-  // See https://github.com/frontarm/navi/pull/84/files
-  window.scrollTo(scrollPosition.x, scrollPosition.y);
+export const setScrollPosition = (scrollPosition: ScrollPosition, scrollOptions?: ScrollOptions): void => {
+  if (scrollOptions !== undefined && typeof scrollOptions === "object" && scrollOptions.behavior === "smooth") {
+    try {
+      window.scrollTo({
+        behavior: scrollOptions.behavior,
+        left: scrollPosition.x,
+        top: scrollPosition.y,
+      });
+    } catch {
+      // If scrollTo with options throws, fall back on old form.
+      // See https://github.com/Fyrd/caniuse/issues/1760
+      // See https://github.com/frontarm/navi/issues/71
+      // See https://github.com/frontarm/navi/pull/84/files
+      window.scrollTo(scrollPosition.x, scrollPosition.y);
+    }
+  } else {
+    // Use old form of scrollTo() (when we can) to maximize browser compatibility.
+    window.scrollTo(scrollPosition.x, scrollPosition.y);
+  }
 };
 
 const getScrollPositionRestorer = (): (() => Promise<void>) => {
@@ -315,9 +329,10 @@ export const prefersReducedMotion = () => {
  */
 export const scrollIntoView = (
   element: Element,
-  options?: ScrollIntoViewOptions,
+  options?: ScrollOptions,
 ) => {
-  // TODO respect block and inline from options object even when not smooth scrolling.
+  // TODO support ScrollIntoViewOptions instead of just ScrollOptions and
+  // respect block and inline even when not smooth scrolling.
   if (prefersReducedMotion()) {
     element.scrollIntoView();
   } else if (
@@ -350,7 +365,7 @@ export const scrollIntoView = (
  */
 export const scrollIntoViewIfRequired = (
   target: Target,
-  options?: ScrollIntoViewOptions,
+  options?: ScrollOptions,
   inViewport?: (element: Element) => boolean,
 ): void => {
   const element = elementFromTarget(target);
@@ -369,7 +384,7 @@ export const focusAndScrollIntoViewIfRequired = async (
   focusTarget: Target,
   scrollIntoViewTarget: Target,
   focusOptions?: FocusOptions,
-  scrollIntoViewOptions?: ScrollIntoViewOptions,
+  scrollOptions?: ScrollOptions,
 ): Promise<boolean> => {
   const elementToFocus = elementFromTarget(focusTarget);
   const elementToScrollIntoView =
@@ -384,7 +399,7 @@ export const focusAndScrollIntoViewIfRequired = async (
     elementToFocus !== undefined
       ? await focusElement(
           elementToFocus,
-          // TODO: if scrollIntoViewOptions doesn't specify smooth and
+          // TODO: if scrollOptions doesn't specify smooth and
           // elementToFocus === elementToScrollIntoView then we can
           // avoid preventScroll shenanigans here.
           focusOptions || { preventScroll: true },
@@ -393,7 +408,7 @@ export const focusAndScrollIntoViewIfRequired = async (
 
   if (elementToScrollIntoView !== undefined) {
     // For screen users, scroll the element into view.
-    scrollIntoViewIfRequired(elementToScrollIntoView, scrollIntoViewOptions);
+    scrollIntoViewIfRequired(elementToScrollIntoView, scrollOptions);
   }
 
   return Promise.resolve(result);
@@ -418,7 +433,7 @@ export const resetFocus = async (
   primaryFocusTarget: Selector,
   focusTarget?: Target,
   focusOptions?: FocusOptions,
-  scrollIntoViewOptions?: ScrollIntoViewOptions,
+  scrollOptions?: ScrollOptions,
 ): Promise<boolean> => {
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
@@ -437,7 +452,7 @@ export const resetFocus = async (
           targetElement,
           targetElement,
           focusOptions,
-          scrollIntoViewOptions,
+          scrollOptions,
         );
 
         if (didFocus) {
@@ -512,13 +527,15 @@ export const announce = (
  * @param formGroupSelector a CSS selector passed to the closest() method of an invalid form input that identifies the element
  *                          that contains both the form input and its label. This form group element will be scrolled into view
  *                          so that both the input and its label are visible.
+ * 
+ * See https://webaim.org/techniques/formvalidation/
  */
 export const focusInvalidForm = (
   formSelector: Selector,
   invalidElementSelector: Selector,
   formGroupSelector: Selector,
   focusOptions?: FocusOptions,
-  scrollIntoViewOptions?: ScrollIntoViewOptions,
+  scrollOptions?: ScrollOptions,
 ): Promise<boolean> => {
   const form = elementFromTarget(formSelector);
 
@@ -548,6 +565,6 @@ export const focusInvalidForm = (
     firstInvalidElement,
     formGroup || firstInvalidElement,
     focusOptions,
-    scrollIntoViewOptions,
+    scrollOptions,
   );
 };
