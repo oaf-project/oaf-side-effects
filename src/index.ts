@@ -129,15 +129,22 @@ export const getScrollPosition = (): ScrollPosition => {
 
 /**
  * Scrolls the window to the given scroll position.
- * 
+ *
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
- * 
+ *
  * @param scrollPosition the scroll position to scroll to
  * @param options controls how the scroll is executed
  */
-export const setScrollPosition = (scrollPosition: ScrollPosition, scrollOptions?: ScrollOptions): void => {
-  if (scrollOptions !== undefined && typeof scrollOptions === "object" && scrollOptions.behavior === "smooth") {
+export const setScrollPosition = (
+  scrollPosition: ScrollPosition,
+  scrollOptions?: ScrollOptions,
+): void => {
+  if (
+    scrollOptions !== undefined &&
+    typeof scrollOptions === "object" &&
+    scrollOptions.behavior === "smooth"
+  ) {
     try {
       window.scrollTo({
         behavior: scrollOptions.behavior,
@@ -327,10 +334,7 @@ export const prefersReducedMotion = () => {
  * @param element the element to scroll into view
  * @param options controls how the scroll is executed
  */
-export const scrollIntoView = (
-  element: Element,
-  options?: ScrollOptions,
-) => {
+export const scrollIntoView = (element: Element, options?: ScrollOptions) => {
   // TODO support ScrollIntoViewOptions instead of just ScrollOptions and
   // respect block and inline even when not smooth scrolling.
   if (prefersReducedMotion()) {
@@ -531,7 +535,7 @@ export const announce = (
  * @param formGroupSelector a CSS selector passed to the closest() method of an invalid form input that identifies the element
  *                          that contains both the form input and its label. This form group element will be scrolled into view
  *                          so that both the input and its label are visible.
- * 
+ *
  * See https://webaim.org/techniques/formvalidation/
  */
 export const focusInvalidForm = (
