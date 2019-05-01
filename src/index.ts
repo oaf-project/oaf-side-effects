@@ -133,21 +133,28 @@ export const getScrollPosition = (): ScrollPosition => {
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
+ * If the user has indicated that they prefer reduced motion, smooth
+ * scrolling behavior options passed to this function will be ignored.
+ *
  * @param scrollPosition the scroll position to scroll to
  * @param options controls how the scroll is executed
  */
 export const setScrollPosition = (
   scrollPosition: ScrollPosition,
-  scrollOptions?: ScrollOptions,
+  options?: ScrollOptions,
 ): void => {
   if (
-    scrollOptions !== undefined &&
-    typeof scrollOptions === "object" &&
-    scrollOptions.behavior === "smooth"
+    options === undefined ||
+    typeof options !== "object" ||
+    options.behavior === "auto" ||
+    prefersReducedMotion()
   ) {
+    // Use old form of scrollTo() (when we can) to maximize browser compatibility.
+    window.scrollTo(scrollPosition.x, scrollPosition.y);
+  } else {
     try {
       window.scrollTo({
-        behavior: scrollOptions.behavior,
+        behavior: options.behavior,
         left: scrollPosition.x,
         top: scrollPosition.y,
       });
@@ -158,9 +165,6 @@ export const setScrollPosition = (
       // See https://github.com/frontarm/navi/pull/84/files
       window.scrollTo(scrollPosition.x, scrollPosition.y);
     }
-  } else {
-    // Use old form of scrollTo() (when we can) to maximize browser compatibility.
-    window.scrollTo(scrollPosition.x, scrollPosition.y);
   }
 };
 
@@ -337,19 +341,21 @@ export const prefersReducedMotion = () => {
 export const scrollIntoView = (element: Element, options?: ScrollOptions) => {
   // TODO support ScrollIntoViewOptions instead of just ScrollOptions and
   // respect block and inline even when not smooth scrolling.
-  if (prefersReducedMotion()) {
-    element.scrollIntoView();
-  } else if (
-    options === undefined ||
-    typeof options !== "object" ||
-    options.behavior === "auto"
-  ) {
-    // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
-    element.scrollIntoView();
+
+  // Scrolling to the document element or the body is problematic
+  // for a few reasons so we just scroll to `0, 0` instead.
+  // See e.g. https://github.com/iamdustan/smoothscroll/issues/138
+  if (element === document.documentElement || element === document.body) {
+    setScrollPosition({ x: 0, y: 0 }, options);
   } else {
-    if (element === document.documentElement || element === document.body) {
-      // See https://github.com/iamdustan/smoothscroll/issues/138
-      setScrollPosition({ x: 0, y: 0 }, options);
+    if (
+      options === undefined ||
+      typeof options !== "object" ||
+      options.behavior === "auto" ||
+      prefersReducedMotion()
+    ) {
+      // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
+      element.scrollIntoView();
     } else {
       try {
         element.scrollIntoView(options);
