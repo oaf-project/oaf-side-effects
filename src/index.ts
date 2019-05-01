@@ -146,7 +146,7 @@ export const setScrollPosition = (
   if (
     options === undefined ||
     typeof options !== "object" ||
-    options.behavior === "auto" ||
+    options.behavior !== "smooth" ||
     prefersReducedMotion()
   ) {
     // Use old form of scrollTo() (when we can) to maximize browser compatibility.
@@ -351,7 +351,7 @@ export const scrollIntoView = (element: Element, options?: ScrollOptions) => {
     if (
       options === undefined ||
       typeof options !== "object" ||
-      options.behavior === "auto" ||
+      options.behavior !== "smooth" ||
       prefersReducedMotion()
     ) {
       // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
