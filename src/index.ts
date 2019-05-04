@@ -309,7 +309,7 @@ export const focusElement = async (
 /**
  * True if the user prefers reduced motion, false otherwise.
  */
-export const prefersReducedMotion = () => {
+export const prefersReducedMotion = (): boolean => {
   // See https://caniuse.com/#feat=matchmedia
   return (
     typeof window.matchMedia === "function" &&
@@ -331,7 +331,7 @@ export const prefersReducedMotion = () => {
 export const scrollIntoView = (
   element: Element,
   smoothScroll: boolean = false,
-) => {
+): void => {
   // TODO support ScrollIntoViewOptions and respect block and inline even when not smooth scrolling.
 
   // Scrolling to the document element or the body is problematic
