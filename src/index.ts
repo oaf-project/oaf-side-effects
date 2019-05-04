@@ -43,7 +43,7 @@ export type ScrollPosition = { readonly x: number; readonly y: number };
  * See https://github.com/ReactTraining/react-router/issues/394
  * See https://www.w3.org/TR/html5/single-page.html#scroll-to-the-fragment
  *
- * @param hash the hash fragment, e.g. "#", "#top" or "#my-heading-id"
+ * @param hash the hash fragment, including the leading # character, e.g. "#", "#top" or "#my-heading-id"
  */
 export const elementFromHash = (hash: Hash): Element | undefined => {
   if (hash === null || hash === undefined) {
@@ -139,28 +139,22 @@ export const getScrollPosition = (): ScrollPosition => {
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
- * If the user has indicated that they prefer reduced motion, smooth
- * scrolling behavior options passed to this function will be ignored.
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
  *
  * @param scrollPosition the scroll position to scroll to
- * @param options controls how the scroll is executed
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const setScrollPosition = (
   scrollPosition: ScrollPosition,
-  options?: ScrollOptions,
+  smoothScroll: boolean = false,
 ): void => {
-  if (
-    options === undefined ||
-    typeof options !== "object" ||
-    options.behavior !== "smooth" ||
-    prefersReducedMotion()
-  ) {
+  if (!smoothScroll || prefersReducedMotion()) {
     // Use old form of scrollTo() (when we can) to maximize browser compatibility.
     window.scrollTo(scrollPosition.x, scrollPosition.y);
   } else {
     try {
       window.scrollTo({
-        behavior: options.behavior,
+        behavior: "smooth",
         left: scrollPosition.x,
         top: scrollPosition.y,
       });
@@ -246,23 +240,18 @@ const withRestoreScrollPosition = async <T>(
 /**
  * Focuses an element, setting `tabindex="-1"` if necessary.
  *
- * If you specify the preventScroll focus option (which has poor
- * browser support) this function will use a window.scrollTo()
- * hack to emulate the preventScroll option's behavior.
- *
- * See: https://developer.paciellogroup.com/blog/2014/08/using-the-tabindex-attribute/
- * See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#Browser_compatibility
- * See: https://github.com/whatwg/html/issues/834
- * See: https://stackoverflow.com/questions/4963053/focus-to-input-without-scrolling/6610501
- * See: https://github.com/calvellido/focus-options-polyfill
- *
  * @param target the element to focus.
- * @param options focus options.
+ * @param preventScroll true if the browser should not scroll the target element into view, false otherwise.
  */
 export const focusElement = async (
   target: Target,
-  options?: FocusOptions,
+  preventScroll: boolean = false,
 ): Promise<boolean> => {
+  // See: https://developer.paciellogroup.com/blog/2014/08/using-the-tabindex-attribute/
+  // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#Browser_compatibility
+  // See: https://github.com/whatwg/html/issues/834
+  // See: https://stackoverflow.com/questions/4963053/focus-to-input-without-scrolling/6610501
+
   const element = elementFromTarget(target);
 
   if (element === undefined) {
@@ -291,17 +280,13 @@ export const focusElement = async (
       element.addEventListener("blur", blurListener);
     }
 
-    if (
-      options !== undefined &&
-      typeof options === "object" &&
-      options.preventScroll === true
-    ) {
+    if (preventScroll) {
       // preventScroll has poor browser support, so we restore scroll manually after setting focus.
       // TODO detect if browser supports preventScroll and avoid `withRestoreScrollPosition`
       // shenanigans if so.
       await withRestoreScrollPosition(() => {
         try {
-          element.focus(options);
+          element.focus({ preventScroll: true });
         } catch {
           // If focus() with options throws, fall back on calling focus() without any arguments.
           element.focus();
@@ -338,33 +323,29 @@ export const prefersReducedMotion = () => {
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
- * If the user has indicated that they prefer reduced motion, smooth
- * scrolling behavior options passed to this function will be ignored.
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
  *
  * @param element the element to scroll into view
- * @param options controls how the scroll is executed
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
-export const scrollIntoView = (element: Element, options?: ScrollOptions) => {
-  // TODO support ScrollIntoViewOptions instead of just ScrollOptions and
-  // respect block and inline even when not smooth scrolling.
+export const scrollIntoView = (
+  element: Element,
+  smoothScroll: boolean = false,
+) => {
+  // TODO support ScrollIntoViewOptions and respect block and inline even when not smooth scrolling.
 
   // Scrolling to the document element or the body is problematic
   // for a few reasons so we just scroll to `0, 0` instead.
   // See e.g. https://github.com/iamdustan/smoothscroll/issues/138
   if (element === document.documentElement || element === document.body) {
-    setScrollPosition({ x: 0, y: 0 }, options);
+    setScrollPosition({ x: 0, y: 0 }, smoothScroll);
   } else {
-    if (
-      options === undefined ||
-      typeof options !== "object" ||
-      options.behavior !== "smooth" ||
-      prefersReducedMotion()
-    ) {
+    if (!smoothScroll || prefersReducedMotion()) {
       // Avoid passing anything to scrollIntoView() (when we can) to maximize browser compatibility.
       element.scrollIntoView();
     } else {
       try {
-        element.scrollIntoView(options);
+        element.scrollIntoView({ behavior: "smooth" });
       } catch {
         // If scrollIntoView with options throws, fall back on no options.
         // See https://github.com/frontarm/navi/issues/71
@@ -380,17 +361,19 @@ export const scrollIntoView = (element: Element, options?: ScrollOptions) => {
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
+ *
  * @param target the element to scroll into view
- * @param options controls how the scroll is executed
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const scrollIntoViewIfRequired = (
   target: Target,
-  options?: ScrollOptions,
-  inViewport?: (element: Element) => boolean,
+  smoothScroll: boolean,
+  inViewport: typeof isInViewport = isInViewport,
 ): void => {
   const element = elementFromTarget(target);
-  if (element !== undefined && !(inViewport || isInViewport)(element)) {
-    scrollIntoView(element, options);
+  if (element !== undefined && !inViewport(element)) {
+    scrollIntoView(element, smoothScroll);
   }
 };
 
@@ -399,12 +382,17 @@ export const scrollIntoViewIfRequired = (
  *
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
+ *
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
+ *
+ * @param focusTarget the element to focus
+ * @param scrollIntoViewTarget the element to scroll into view
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const focusAndScrollIntoViewIfRequired = async (
   focusTarget: Target,
   scrollIntoViewTarget: Target,
-  focusOptions?: FocusOptions,
-  scrollOptions?: ScrollOptions,
+  smoothScroll: boolean = false,
 ): Promise<boolean> => {
   const elementToFocus = elementFromTarget(focusTarget);
   const elementToScrollIntoView =
@@ -414,21 +402,21 @@ export const focusAndScrollIntoViewIfRequired = async (
   // See https://github.com/whatwg/html/issues/834
   // See https://stackoverflow.com/questions/4963053/focus-to-input-without-scrolling/6610501
 
+  // If we're not smooth scrolling and
+  // elementToFocus === elementToScrollIntoView then we can
+  // avoid preventScroll shenanigans.
+  const preventScroll =
+    smoothScroll && elementToFocus !== elementToScrollIntoView;
+
   // Focus the element for keyboard users and users of assistive technology.
   const result: boolean =
     elementToFocus !== undefined
-      ? await focusElement(
-          elementToFocus,
-          // TODO: if scrollOptions doesn't specify smooth and
-          // elementToFocus === elementToScrollIntoView then we can
-          // avoid preventScroll shenanigans here.
-          focusOptions || { preventScroll: true },
-        )
+      ? await focusElement(elementToFocus, preventScroll)
       : false;
 
   if (elementToScrollIntoView !== undefined) {
     // For screen users, scroll the element into view.
-    scrollIntoViewIfRequired(elementToScrollIntoView, scrollOptions);
+    scrollIntoViewIfRequired(elementToScrollIntoView, smoothScroll);
   }
 
   return Promise.resolve(result);
@@ -448,12 +436,12 @@ export const focusAndScrollIntoViewIfRequired = async (
  * e.g. `main h1`.
  * @param focusTarget the element to focus, e.g. the element identified by
  * the hash fragment of the URL.
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const resetFocus = async (
   primaryFocusTarget: Selector,
   focusTarget?: Target,
-  focusOptions?: FocusOptions,
-  scrollOptions?: ScrollOptions,
+  smoothScroll: boolean = false,
 ): Promise<boolean> => {
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
@@ -471,8 +459,7 @@ export const resetFocus = async (
         const didFocus = await focusAndScrollIntoViewIfRequired(
           targetElement,
           targetElement,
-          focusOptions,
-          scrollOptions,
+          smoothScroll,
         );
 
         if (didFocus) {
@@ -551,6 +538,8 @@ export const announce = (
  * For smooth scrolling behavior you might want to use the smoothscroll
  * polyfill http://iamdustan.com/smoothscroll/
  *
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
+ *
  * For IE support you might want to use the closest() polyfill from https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
  *
  * @param formSelector a CSS selector that uniquely identifies the form to focus, e.g. `#search-form`.
@@ -558,13 +547,13 @@ export const announce = (
  * @param formGroupSelector a CSS selector passed to the `closest()` method of an invalid form input that identifies the element
  *                          that contains both the form input and its label. This form group element will be scrolled into view
  *                          so that both the input and its label are visible.
+ * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const focusInvalidForm = (
   formSelector: Selector,
   invalidElementSelector: Selector,
   formGroupSelector: Selector,
-  focusOptions?: FocusOptions,
-  scrollOptions?: ScrollOptions,
+  smoothScroll: boolean = false,
 ): Promise<boolean> => {
   const form = elementFromTarget(formSelector);
 
@@ -593,7 +582,6 @@ export const focusInvalidForm = (
   return focusAndScrollIntoViewIfRequired(
     firstInvalidElement,
     formGroup || firstInvalidElement,
-    focusOptions,
-    scrollOptions,
+    smoothScroll,
   );
 };
