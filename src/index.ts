@@ -544,15 +544,20 @@ export const announce = (
  * Focuses and scrolls into view the first invalid form element inside
  * a given form.
  *
+ * Call this function after you have validated a form and identified errors.
+ *
+ * See https://webaim.org/techniques/formvalidation/
+ *
+ * For smooth scrolling behavior you might want to use the smoothscroll
+ * polyfill http://iamdustan.com/smoothscroll/
+ *
  * For IE support you might want to use the closest() polyfill from https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
  *
  * @param formSelector a CSS selector that uniquely identifies the form to focus, e.g. `#search-form`.
  * @param invalidElementSelector the CSS selector that is used to identify invalid elements within a form, e.g. `[aria-invalid="true"]`.
- * @param formGroupSelector a CSS selector passed to the closest() method of an invalid form input that identifies the element
+ * @param formGroupSelector a CSS selector passed to the `closest()` method of an invalid form input that identifies the element
  *                          that contains both the form input and its label. This form group element will be scrolled into view
  *                          so that both the input and its label are visible.
- *
- * See https://webaim.org/techniques/formvalidation/
  */
 export const focusInvalidForm = (
   formSelector: Selector,
