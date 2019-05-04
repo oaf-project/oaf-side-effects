@@ -445,7 +445,7 @@ export const focusAndScrollIntoViewIfRequired = async (
  * See: https://github.com/ReactTraining/react-router/issues/5210
  *
  * @param primaryFocusTarget a CSS selector for your primary focus target,
- * e.g. `[main h1]`.
+ * e.g. `main h1`.
  * @param focusTarget the element to focus, e.g. the element identified by
  * the hash fragment of the URL.
  */
