@@ -308,6 +308,8 @@ export const focusElement = async (
 
 /**
  * True if the user prefers reduced motion, false otherwise.
+ *
+ * See https://css-tricks.com/introduction-reduced-motion-media-query/
  */
 export const prefersReducedMotion = (): boolean => {
   // See https://caniuse.com/#feat=matchmedia
@@ -406,20 +408,19 @@ export const focusAndScrollIntoViewIfRequired = async (
   // elementToFocus === elementToScrollIntoView then we can
   // avoid preventScroll shenanigans.
   const preventScroll =
-    smoothScroll && elementToFocus !== elementToScrollIntoView;
+    smoothScroll || elementToFocus !== elementToScrollIntoView;
 
   // Focus the element for keyboard users and users of assistive technology.
-  const result: boolean =
-    elementToFocus !== undefined
-      ? await focusElement(elementToFocus, preventScroll)
-      : false;
+  const result =
+    elementToFocus !== undefined &&
+    (await focusElement(elementToFocus, preventScroll));
 
   if (elementToScrollIntoView !== undefined) {
     // For screen users, scroll the element into view.
     scrollIntoViewIfRequired(elementToScrollIntoView, smoothScroll);
   }
 
-  return Promise.resolve(result);
+  return result;
 };
 
 /**
@@ -429,6 +430,11 @@ export const focusAndScrollIntoViewIfRequired = async (
  * document element and finally document body, in that order. If any of
  * those elements do not exist or cannot be focused, will attempt to
  * focus the next fallback element.
+ *
+ * For smooth scrolling behavior you might want to use the smoothscroll
+ * polyfill http://iamdustan.com/smoothscroll/
+ *
+ * If the user has indicated that they prefer reduced motion, the smoothScroll value will be ignored.
  *
  * See: https://github.com/ReactTraining/react-router/issues/5210
  *
