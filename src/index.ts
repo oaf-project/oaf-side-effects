@@ -122,11 +122,10 @@ export const elementFromTarget = (
   return target instanceof Element ? target : querySelector(target, parent);
 };
 
-const documentElement =
-  document.documentElement || document.body.parentNode || document.body;
-
 export const getScrollPosition = (): ScrollPosition => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollX#Notes
+  const documentElement =
+    document.documentElement || document.body.parentNode || document.body;
   const x = window.scrollX || window.pageXOffset || documentElement.scrollLeft;
   const y = window.scrollY || window.pageYOffset || documentElement.scrollTop;
 
