@@ -15,6 +15,12 @@ export type Selector = string;
 export type Hash = string;
 
 /**
+ * ARIA live region politeness values.
+ * See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions
+ */
+export type AriaLivePoliteness = "off" | "polite" | "assertive";
+
+/**
  * Specifies an element that is the target of a side effect (e.g. scroll into view, focus). This is
  * either the element itself or a selector that will return the element when passed to querySelector().
  */
@@ -481,12 +487,15 @@ export const resetFocus = async (
   return false;
 };
 
-const createAnnounceDiv = (announceDivId: string): HTMLDivElement => {
+const createAnnounceDiv = (
+  id: string,
+  politeness: AriaLivePoliteness,
+): HTMLDivElement => {
   const div = document.createElement("div");
 
-  div.setAttribute("id", announceDivId);
+  div.setAttribute("id", id);
   div.setAttribute("role", "status");
-  div.setAttribute("aria-live", "polite");
+  div.setAttribute("aria-live", politeness);
   div.setAttribute("aria-atomic", "true");
 
   // As per Bootstrap's sr-only styles.
@@ -522,10 +531,11 @@ export const announce = (
   announcementsDivId: string = "announcements",
   setMessageTimeout: number = 50,
   clearMessageTimeout: number = 500,
+  politeness: AriaLivePoliteness = "polite",
 ): void => {
   const announceDiv =
     document.getElementById(announcementsDivId) ||
-    createAnnounceDiv(announcementsDivId);
+    createAnnounceDiv(announcementsDivId, politeness);
   setTimeout(() => (announceDiv.innerText = message), setMessageTimeout);
   setTimeout(() => (announceDiv.innerText = ""), clearMessageTimeout);
 };
