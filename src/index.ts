@@ -369,7 +369,7 @@ export const scrollIntoView = (
  */
 export const scrollIntoViewIfRequired = (
   target: Target,
-  smoothScroll: boolean,
+  smoothScroll: boolean = false,
   inViewport: typeof isInViewport = isInViewport,
 ): void => {
   const element = elementFromTarget(target);
