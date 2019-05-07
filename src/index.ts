@@ -79,6 +79,16 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
  * @param title The new document title.
  */
 export const setTitle = (title: string): void => {
+  if (
+    title === null ||
+    title === undefined ||
+    typeof title !== "string" ||
+    title.trim() === ""
+  ) {
+    console.error(
+      `Title [${title}] is invalid. See https://www.w3.org/TR/UNDERSTANDING-WCAG20/navigation-mechanisms-title.html`,
+    );
+  }
   document.title = title;
   return;
 };
