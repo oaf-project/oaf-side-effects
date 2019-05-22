@@ -10,7 +10,7 @@
 export type Selector = string;
 
 /**
- * A hash fragment.
+ * A hash fragment, including the leading # character, e.g. "#", "#top" or "#my-heading-id"
  */
 export type Hash = string;
 
@@ -491,7 +491,7 @@ export const resetFocus = async (
 
 const createAnnounceDiv = (
   id: string,
-  politeness: AriaLivePoliteness,
+  politeness: Exclude<AriaLivePoliteness, "off">,
 ): HTMLDivElement => {
   const div = document.createElement("div");
 
@@ -533,7 +533,7 @@ export const announce = (
   announcementsDivId: string = "announcements",
   setMessageTimeout: number = 50,
   clearMessageTimeout: number = 500,
-  politeness: AriaLivePoliteness = "polite",
+  politeness: Exclude<AriaLivePoliteness, "off"> = "polite",
 ): void => {
   const announceDiv =
     document.getElementById(announcementsDivId) ||
