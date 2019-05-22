@@ -24,12 +24,12 @@
     "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
     "format-lint": "prettylint '{src,test}/**/*.{ts,tsx}'",
     "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src && cp docs_config.yml ./docs/_config.yml",
-    "release": "yarn build && yarn lint && yarn type-coverage && yarn format-lint && yarn publish && yarn documentation"
+    "release": "yarn build && yarn lint && yarn type-coverage --strict --ignore-catch --detail && yarn format-lint && yarn publish && yarn documentation"
   },
   "prettier": {
     "trailingComma": "all"
   },
   "typeCoverage": {
-    "atLeast": 99
+    "atLeast": 100
   }
 }
