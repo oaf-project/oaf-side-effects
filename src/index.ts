@@ -557,7 +557,7 @@ export const announce = (
  *
  * For IE support you might want to use the closest() polyfill from https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
  *
- * @param formSelector a CSS selector that uniquely identifies the form to focus, e.g. `#search-form`.
+ * @param formTarget the form element to focus or a CSS selector that uniquely identifies the form to focus, e.g. `#search-form`.
  * @param invalidElementSelector the CSS selector that is used to identify invalid elements within a form, e.g. `[aria-invalid="true"]`.
  * @param formGroupSelector a CSS selector passed to the `closest()` method of an invalid form input that identifies the element
  *                          that contains both the form input and its label. This form group element will be scrolled into view
@@ -565,16 +565,16 @@ export const announce = (
  * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const focusInvalidForm = (
-  formSelector: Selector,
+  formTarget: Target,
   invalidElementSelector: Selector,
   formGroupSelector: Selector,
   smoothScroll: boolean = false,
 ): Promise<boolean> => {
-  const form = elementFromTarget(formSelector);
+  const form = elementFromTarget(formTarget);
 
   if (form === undefined) {
     console.warn(
-      `No form matching [${formSelector}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No form matching [${formTarget}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
@@ -583,7 +583,7 @@ export const focusInvalidForm = (
 
   if (firstInvalidElement === undefined) {
     console.warn(
-      `No invalid form element matching [${invalidElementSelector}] found inside form [${formSelector}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
