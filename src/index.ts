@@ -3,6 +3,7 @@
 // tslint:disable: no-if-statement
 // tslint:disable: no-console
 // tslint:disable: interface-over-type-literal
+// tslint:disable: no-try
 
 /**
  * A CSS selector.
@@ -468,6 +469,7 @@ export const resetFocus = async (
     document.body,
   ];
 
+  // tslint:disable-next-line: no-loop-statement
   for (const targetElement of targets) {
     if (targetElement instanceof Element) {
       try {
