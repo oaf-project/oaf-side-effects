@@ -8,8 +8,11 @@
     "url": "https://github.com/oaf-project/oaf-side-effects.git"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
     "prettier": "^1.17.1",
     "prettylint": "^1.0.0",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.17.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-immutable": "^6.0.0",
@@ -24,7 +27,8 @@
     "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
     "format-lint": "prettylint '{src,test}/**/*.{ts,tsx}'",
     "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src && cp docs_config.yml ./docs/_config.yml",
-    "release": "yarn build && yarn lint && yarn type-coverage --strict --ignore-catch --detail && yarn format-lint && yarn publish && yarn documentation"
+    "release": "yarn build && yarn lint && yarn type-coverage --strict --ignore-catch --detail && yarn format-lint && yarn test && yarn publish && yarn documentation",
+    "test": "jest"
   },
   "prettier": {
     "trailingComma": "all"
