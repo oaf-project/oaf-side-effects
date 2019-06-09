@@ -47,7 +47,7 @@ export type ScrollPosition = { readonly x: number; readonly y: number };
  * @param hash the hash fragment, including the leading # character, e.g. "#", "#top" or "#my-heading-id"
  */
 export const elementFromHash = (hash: Hash): Element | undefined => {
-  if (hash === null || hash === undefined) {
+  if (typeof hash !== "string") {
     return undefined;
   }
   switch (hash) {
