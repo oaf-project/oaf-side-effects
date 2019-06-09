@@ -3,10 +3,13 @@ import {
   elementFromHash,
   elementFromTarget,
   focusAndScrollIntoViewIfRequired,
+  focusElement,
   focusInvalidForm,
   Hash,
+  prefersReducedMotion,
   resetFocus,
   scrollIntoView,
+  scrollIntoViewIfRequired,
   setScrollPosition,
   setTitle,
 } from ".";
@@ -16,6 +19,7 @@ import {
 // tslint:disable: no-object-mutation
 // tslint:disable: readonly-array
 // tslint:disable: no-duplicate-string
+// tslint:disable: no-identical-functions
 
 describe("elementFromHash", () => {
   test("finds element by ID", () => {
@@ -85,6 +89,14 @@ describe("resetFocus", () => {
 describe("focusAndScrollIntoViewIfRequired", () => {
   test("doesn't throw when focus and scroll elements are the same", async () => {
     await focusAndScrollIntoViewIfRequired("body", "body");
+  });
+
+  test("doesn't throw when focus element doesn't exist", async () => {
+    await focusAndScrollIntoViewIfRequired("does-not-exist", "body");
+  });
+
+  test("doesn't throw when scroll element doesn't exist", async () => {
+    await focusAndScrollIntoViewIfRequired("body", "does-not-exist");
   });
 
   test("doesn't throw when focus and scroll elements are different", async () => {
@@ -179,6 +191,22 @@ describe("scrollIntoView", () => {
     scrollIntoView(div);
     scrollIntoView(div, true);
   });
+
+  test("handles exception from scrollIntoView when smooth scrolling", () => {
+    // tslint:disable-next-line: no-empty
+    Element.prototype.scrollIntoView = (options?: ScrollIntoViewOptions) => {
+      // tslint:disable-next-line: no-if-statement
+      if (options !== undefined && options.behavior === "smooth") {
+        // tslint:disable-next-line: no-throw
+        throw new Error("");
+      }
+    };
+
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    scrollIntoView(div, true);
+  });
 });
 
 describe("scrollIntoView", () => {
@@ -199,5 +227,37 @@ describe("scrollIntoView", () => {
     window.scrollTo = scrollTo;
 
     setScrollPosition({ x: 0, y: 0 }, true);
+  });
+});
+
+describe("prefersReducedMotion", () => {
+  test("doesn't throw when window.matchMedia is undefined", () => {
+    expect(prefersReducedMotion()).toBe(false);
+  });
+
+  test("calls window.matchMedia appropriately", () => {
+    window.matchMedia = () => ({ matches: true } as MediaQueryList);
+    expect(prefersReducedMotion()).toBe(true);
+  });
+});
+
+describe("scrollIntoViewIfRequired", () => {
+  test("doesn't throw", () => {
+    scrollIntoViewIfRequired(document.documentElement);
+  });
+
+  test("doesn't throw if smooth scrolling", () => {
+    scrollIntoViewIfRequired(document.documentElement, true);
+  });
+
+  test("doesn't throw when element is not in viewport", () => {
+    scrollIntoViewIfRequired(document.documentElement, false, () => false);
+  });
+});
+
+describe("focusElement", () => {
+  test("doesn't throw when selector doesn't exist", async () => {
+    const result = await focusElement("does-not-exist");
+    expect(result).toBe(false);
   });
 });
