@@ -256,8 +256,22 @@ describe("scrollIntoViewIfRequired", () => {
 });
 
 describe("focusElement", () => {
-  test("doesn't throw when selector doesn't exist", async () => {
+  test("returns false when selector doesn't exist", async () => {
     const result = await focusElement("does-not-exist");
     expect(result).toBe(false);
+  });
+
+  test("doesn't throw when window.getComputedStyle is undefined", async () => {
+    // @ts-ignore
+    window.getComputedStyle = undefined;
+
+    await focusElement(document.body, true);
+  });
+
+  test("doesn't throw when smooth scroll set via CSS", async () => {
+    // @ts-ignore
+    window.getComputedStyle = () => ({ scrollBehavior: "smooth" });
+
+    await focusElement(document.body, true);
   });
 });
