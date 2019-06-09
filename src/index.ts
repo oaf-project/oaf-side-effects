@@ -531,12 +531,25 @@ export const announce = (
   setMessageTimeout: number = 50,
   clearMessageTimeout: number = 500,
   politeness: Exclude<AriaLivePoliteness, "off"> = "polite",
-): void => {
+): Promise<unknown> => {
   const announceDiv =
     document.getElementById(announcementsDivId) ||
     createAnnounceDiv(announcementsDivId, politeness);
-  setTimeout(() => (announceDiv.innerText = message), setMessageTimeout);
-  setTimeout(() => (announceDiv.innerText = ""), clearMessageTimeout);
+  const p1 = new Promise(resolve => {
+    setTimeout(() => {
+      announceDiv.innerText = message;
+      resolve();
+    }, setMessageTimeout);
+  });
+
+  const p2 = new Promise(resolve => {
+    setTimeout(() => {
+      announceDiv.innerText = "";
+      resolve();
+    }, clearMessageTimeout);
+  });
+
+  return Promise.all([p1, p2]);
 };
 
 /**

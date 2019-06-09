@@ -61,8 +61,8 @@ describe("elementFromTarget", () => {
 });
 
 describe("announce", () => {
-  test("doesn't throw", () => {
-    announce("hello");
+  test("doesn't throw", async () => {
+    await announce("hello");
   });
 });
 
@@ -73,8 +73,27 @@ describe("resetFocus", () => {
 });
 
 describe("focusAndScrollIntoViewIfRequired", () => {
-  test("doesn't throw", async () => {
+  test("doesn't throw when focus and scroll elements are the same", async () => {
     await focusAndScrollIntoViewIfRequired("body", "body");
+  });
+
+  test("doesn't throw when focus and scroll elements are different", async () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    const p = document.createElement("p");
+    document.body.appendChild(p);
+
+    // tslint:disable-next-line: no-empty
+    window.scrollTo = () => {};
+
+    await focusAndScrollIntoViewIfRequired(div, p);
+  });
+
+  test("doesn't throw when smooth scrolling", async () => {
+    // tslint:disable-next-line: no-empty
+    window.scrollTo = () => {};
+
+    await focusAndScrollIntoViewIfRequired("body", "body", true);
   });
 });
 
