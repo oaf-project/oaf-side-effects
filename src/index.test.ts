@@ -7,6 +7,7 @@ import {
   Hash,
   resetFocus,
   scrollIntoView,
+  setScrollPosition,
   setTitle,
 } from ".";
 
@@ -177,5 +178,26 @@ describe("scrollIntoView", () => {
     scrollIntoView(window.document.documentElement);
     scrollIntoView(div);
     scrollIntoView(div, true);
+  });
+});
+
+describe("scrollIntoView", () => {
+  test("doesn't throw when using smooth scrolling", () => {
+    setScrollPosition({ x: 0, y: 0 }, true);
+  });
+
+  test("handles exception from scrollTo when smooth scrolling", () => {
+    const scrollTo = (options?: ScrollToOptions) => {
+      // tslint:disable-next-line: no-if-statement
+      if (options !== undefined && options.behavior === "smooth") {
+        // tslint:disable-next-line: no-throw
+        throw new Error("");
+      }
+    };
+
+    // @ts-ignore
+    window.scrollTo = scrollTo;
+
+    setScrollPosition({ x: 0, y: 0 }, true);
   });
 });
