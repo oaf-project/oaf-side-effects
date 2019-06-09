@@ -6,6 +6,7 @@ import {
   focusInvalidForm,
   Hash,
   resetFocus,
+  scrollIntoView,
   setTitle,
 } from ".";
 
@@ -67,8 +68,16 @@ describe("announce", () => {
 });
 
 describe("resetFocus", () => {
-  test("doesn't throw", () => {
-    resetFocus("body");
+  test("sets focus to the primaryFocusTarget", async () => {
+    await resetFocus("body");
+    expect(window.document.activeElement).toBe(window.document.body);
+  });
+
+  test("sets focus to the focusTarget", async () => {
+    const div = window.document.createElement("div");
+    window.document.body.appendChild(div);
+    await resetFocus("body", div);
+    expect(window.document.activeElement).toBe(div);
   });
 });
 
@@ -120,6 +129,20 @@ describe("focusInvalidForm", () => {
 
     expect(document.activeElement).toBe(invalidInput);
   });
+
+  test("doesn't throw if closest() is undefined", async () => {
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+
+    const invalidInput = document.createElement("input");
+    invalidInput.setAttribute("aria-invalid", "true");
+    form.appendChild(invalidInput);
+
+    // @ts-ignore
+    invalidInput.closest = undefined;
+
+    await focusInvalidForm(form, "[aria-invalid=true]", ".form-group");
+  });
 });
 
 describe("setTitle", () => {
@@ -139,5 +162,20 @@ describe("setTitle", () => {
       setTitle(title);
       expect(document.title).toBe(expected);
     });
+  });
+});
+
+describe("scrollIntoView", () => {
+  test("doesn't throw", () => {
+    // tslint:disable-next-line: no-empty
+    Element.prototype.scrollIntoView = () => {};
+
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    scrollIntoView(window.document.body);
+    scrollIntoView(window.document.documentElement);
+    scrollIntoView(div);
+    scrollIntoView(div, true);
   });
 });
