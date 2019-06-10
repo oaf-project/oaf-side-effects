@@ -22,6 +22,31 @@ import {
 // tslint:disable: no-identical-functions
 // tslint:disable: no-throw
 
+// Keep references to the original values of these functions.
+const documentElementFocus = window.document.documentElement.focus;
+const bodyFocus = window.document.body.focus;
+const matchMedia = window.matchMedia;
+const getComputedStyle = window.getComputedStyle;
+
+beforeEach(() => {
+  // Clear previous test's DOM.
+  window.document.body.innerHTML = "";
+
+  // js-dom doesn't implement scrollTo
+  // tslint:disable-next-line: no-empty
+  window.scrollTo = () => {};
+
+  // js-dom doesn't implement scrollIntoView
+  // tslint:disable-next-line: no-empty
+  Element.prototype.scrollIntoView = () => {};
+
+  // Restore these functions because some tests mess with them.
+  window.document.documentElement.focus = documentElementFocus;
+  window.document.body.focus = bodyFocus;
+  window.matchMedia = matchMedia;
+  window.getComputedStyle = getComputedStyle;
+});
+
 describe("elementFromHash", () => {
   test("finds element by ID", () => {
     const div = window.document.createElement("div");
@@ -75,15 +100,45 @@ describe("announce", () => {
 
 describe("resetFocus", () => {
   test("sets focus to the primaryFocusTarget", async () => {
-    await resetFocus("body");
+    const result = await resetFocus("body");
+    expect(result).toBe(true);
     expect(window.document.activeElement).toBe(window.document.body);
   });
 
   test("sets focus to the focusTarget", async () => {
     const div = window.document.createElement("div");
     window.document.body.appendChild(div);
-    await resetFocus("body", div);
+    const result = await resetFocus("body", div);
+    expect(result).toBe(true);
     expect(window.document.activeElement).toBe(div);
+  });
+
+  test("returns false if nothing could be focused", async () => {
+    const div = window.document.createElement("div");
+    window.document.body.appendChild(div);
+    const p = window.document.createElement("p");
+    window.document.body.appendChild(p);
+
+    div.focus = () => {
+      // tslint:disable-next-line: no-string-throw
+      throw "Expected error";
+    };
+    p.focus = () => {
+      // tslint:disable-next-line: no-string-throw
+      throw "Expected error";
+    };
+    window.document.documentElement.focus = () => {
+      // tslint:disable-next-line: no-string-throw
+      throw "Expected error";
+    };
+    window.document.body.focus = () => {
+      // tslint:disable-next-line: no-string-throw
+      throw "Expected error";
+    };
+
+    const result = await resetFocus("div", "p");
+
+    expect(result).toBe(false);
   });
 });
 
@@ -106,16 +161,10 @@ describe("focusAndScrollIntoViewIfRequired", () => {
     const p = document.createElement("p");
     document.body.appendChild(p);
 
-    // tslint:disable-next-line: no-empty
-    window.scrollTo = () => {};
-
     await focusAndScrollIntoViewIfRequired(div, p);
   });
 
   test("doesn't throw when smooth scrolling", async () => {
-    // tslint:disable-next-line: no-empty
-    window.scrollTo = () => {};
-
     await focusAndScrollIntoViewIfRequired("body", "body", true);
   });
 });
@@ -181,9 +230,6 @@ describe("setTitle", () => {
 
 describe("scrollIntoView", () => {
   test("doesn't throw", () => {
-    // tslint:disable-next-line: no-empty
-    Element.prototype.scrollIntoView = () => {};
-
     const div = document.createElement("div");
     document.body.appendChild(div);
 
@@ -194,16 +240,15 @@ describe("scrollIntoView", () => {
   });
 
   test("handles exception from scrollIntoView when smooth scrolling", () => {
-    // tslint:disable-next-line: no-empty
-    Element.prototype.scrollIntoView = (options?: ScrollIntoViewOptions) => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    div.scrollIntoView = (options?: ScrollIntoViewOptions) => {
       // tslint:disable-next-line: no-if-statement
       if (options !== undefined && options.behavior === "smooth") {
         throw new Error("");
       }
     };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
 
     scrollIntoView(div, true);
   });

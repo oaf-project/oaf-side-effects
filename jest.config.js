@@ -8,10 +8,13 @@ module.exports = {
   "collectCoverage": true,
   "coverageThreshold": {
     "global": {
-      "branches": 88,
+      "branches": 89,
       "functions": 100,
-      "lines": 97,
-      "statements": 97
+      "lines": 98,
+      "statements": 98
     }
-  }
+  },
+  // We mess with globals (window, document) in the tests so
+  // this keeps them from interfering with each other.
+  "maxConcurrency": 1
 }
