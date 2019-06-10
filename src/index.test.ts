@@ -313,6 +313,25 @@ describe("focusElement", () => {
 
     expect(result).toBe(true);
     expect(window.document.activeElement).toBe(div);
+    expect(div.getAttribute("tabindex")).toBe("-1");
+
+    div.blur();
+    expect(div.getAttribute("tabindex")).toBeNull();
+  });
+
+  test("leaves tabindex alone if already set", async () => {
+    const div = window.document.createElement("div");
+    div.setAttribute("tabindex", "0");
+    window.document.body.appendChild(div);
+
+    const result = await focusElement(div, true);
+
+    expect(result).toBe(true);
+    expect(window.document.activeElement).toBe(div);
+    expect(div.getAttribute("tabindex")).toBe("0");
+
+    div.blur();
+    expect(div.getAttribute("tabindex")).toBe("0");
   });
 
   test("handles exceptions from focus() when preventScroll is true", async () => {
