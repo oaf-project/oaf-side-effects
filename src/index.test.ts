@@ -20,6 +20,7 @@ import {
 // tslint:disable: readonly-array
 // tslint:disable: no-duplicate-string
 // tslint:disable: no-identical-functions
+// tslint:disable: no-throw
 
 describe("elementFromHash", () => {
   test("finds element by ID", () => {
@@ -197,7 +198,6 @@ describe("scrollIntoView", () => {
     Element.prototype.scrollIntoView = (options?: ScrollIntoViewOptions) => {
       // tslint:disable-next-line: no-if-statement
       if (options !== undefined && options.behavior === "smooth") {
-        // tslint:disable-next-line: no-throw
         throw new Error("");
       }
     };
@@ -218,7 +218,6 @@ describe("scrollIntoView", () => {
     const scrollTo = (options?: ScrollToOptions) => {
       // tslint:disable-next-line: no-if-statement
       if (options !== undefined && options.behavior === "smooth") {
-        // tslint:disable-next-line: no-throw
         throw new Error("");
       }
     };
@@ -261,17 +260,64 @@ describe("focusElement", () => {
     expect(result).toBe(false);
   });
 
+  test("focuses the specified element", async () => {
+    const div = window.document.createElement("div");
+    window.document.body.appendChild(div);
+
+    const result = await focusElement(div, true);
+
+    expect(result).toBe(true);
+    expect(window.document.activeElement).toBe(div);
+  });
+
+  test("handles exceptions from focus() when preventScroll is true", async () => {
+    const div = window.document.createElement("div");
+    window.document.body.appendChild(div);
+
+    const originalFocus = div.focus;
+    div.focus = options => {
+      // tslint:disable-next-line: no-if-statement
+      if (options !== undefined && options.preventScroll === true) {
+        throw new Error("");
+      } else {
+        originalFocus.call(div);
+      }
+    };
+
+    const result = await focusElement(div, true);
+
+    expect(result).toBe(true);
+    expect(window.document.activeElement).toBe(div);
+  });
+
+  test("returns false when focus() throws", async () => {
+    const div = window.document.createElement("div");
+    window.document.body.appendChild(div);
+
+    div.focus = () => {
+      // tslint:disable: no-string-throw
+      throw "Expected error";
+    };
+
+    const result = await focusElement(div, true);
+
+    expect(result).toBe(false);
+    expect(window.document.activeElement).not.toBe(div);
+  });
+
   test("doesn't throw when window.getComputedStyle is undefined", async () => {
     // @ts-ignore
     window.getComputedStyle = undefined;
 
-    await focusElement(document.body, true);
+    const result = await focusElement(document.body, true);
+    expect(result).toBe(true);
   });
 
   test("doesn't throw when smooth scroll set via CSS", async () => {
     // @ts-ignore
     window.getComputedStyle = () => ({ scrollBehavior: "smooth" });
 
-    await focusElement(document.body, true);
+    const result = await focusElement(document.body, true);
+    expect(result).toBe(true);
   });
 });
