@@ -7,6 +7,9 @@
         "tslint-config-prettier"
     ],
     "jsRules": {},
-    "rules": {},
+    "rules": {
+        "no-unsafe-any": true,
+        "no-any": true
+    },
     "rulesDirectory": []
 }
