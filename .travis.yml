@@ -7,5 +7,6 @@ script:
   - yarn type-coverage --strict --ignore-catch --detail
   - yarn format-lint
   - yarn test
+  - yarn stryker run
 after_success:
   - yarn codecov
