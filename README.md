@@ -27,7 +27,6 @@ npm install oaf-side-effects
 
 ## Browser support
 
-* `focusInvalidForm()` uses [closest()](https://developer.mozilla.org/en-US/docs/Web/API/Element/closest), so for IE support you probably want to use the [closest() polyfill described at MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill) or [jonathantneal/closest](https://github.com/jonathantneal/closest).
 * Oaf Side Effects supports the smooth scrolling option of [scrollIntoView()](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView), so you might want to use the [smoothscroll polyfill](http://iamdustan.com/smoothscroll/).
 
 ## See also
