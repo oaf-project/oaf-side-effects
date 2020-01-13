@@ -555,7 +555,11 @@ export const announce = (
 /**
  * Like `closest()` but stops ascending the ancestor tree once it hits the specified form element.
  */
-export const closestInsideForm = (element: Element, selector: Selector, form: Element): Element | undefined => {
+export const closestInsideForm = (
+  element: Element,
+  selector: Selector,
+  form: Element,
+): Element | undefined => {
   if (element === form || element.parentElement === null) {
     return undefined;
   } else if (element.matches(selector)) {
@@ -613,7 +617,7 @@ export const focusInvalidForm = (
   }
 
   const firstInvalidElementWrapper =
-  elementWrapperSelector !== undefined &&
+    elementWrapperSelector !== undefined &&
     typeof firstInvalidElement.matches === "function"
       ? closestInsideForm(firstInvalidElement, elementWrapperSelector, form)
       : undefined;

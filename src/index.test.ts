@@ -398,7 +398,7 @@ describe("closestInsideForm", () => {
 
     expect(closestInsideForm(input, "div", form)).toBe(div);
   });
-  
+
   test("stops at form even when match exists above form", () => {
     const div = window.document.createElement("div");
     const form = window.document.createElement("form");
