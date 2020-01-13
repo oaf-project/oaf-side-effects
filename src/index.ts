@@ -553,6 +553,19 @@ export const announce = (
 };
 
 /**
+ * Like `closest()` but stops ascending the ancestor tree once it hits the specified form element.
+ */
+export const closestInsideForm = (element: Element, selector: Selector, form: Element): Element | undefined => {
+  if (element === form || element.parentElement === null) {
+    return undefined;
+  } else if (element.matches(selector)) {
+    return element;
+  } else {
+    return closestInsideForm(element.parentElement, selector, form);
+  }
+};
+
+/**
  * Focuses and scrolls into view the first invalid form element inside
  * a given form.
  *
@@ -569,15 +582,15 @@ export const announce = (
  *
  * @param formTarget the form element to focus or a CSS selector that uniquely identifies the form to focus, e.g. `#search-form`.
  * @param invalidElementSelector the CSS selector that is used to identify invalid elements within a form, e.g. `[aria-invalid="true"]`.
- * @param formGroupSelector a CSS selector passed to the `closest()` method of an invalid form input that identifies the element
- *                          that contains both the form input and its label. This form group element will be scrolled into view
- *                          so that both the input and its label are visible.
+ * @param elementWrapperSelector the CSS selector that matches the "wrapper" element--the closest ancestor of the form input--that contains
+ *                               both the form input and its label.
+ *                               This wrapper element will be scrolled into view so that both the invalid input and its label are visible.
  * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const focusInvalidForm = (
   formTarget: Target,
   invalidElementSelector: Selector,
-  formGroupSelector: Selector,
+  elementWrapperSelector: Selector | undefined,
   smoothScroll: boolean = false,
 ): Promise<boolean> => {
   const form = elementFromTarget(formTarget);
@@ -592,21 +605,22 @@ export const focusInvalidForm = (
   const firstInvalidElement = elementFromTarget(invalidElementSelector, form);
 
   if (firstInvalidElement === undefined) {
+    // TODO: In this case should we focus and scroll to the form itself?
     console.warn(
       `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
 
-  const formGroup =
-    formGroupSelector !== undefined &&
-    typeof firstInvalidElement.closest === "function"
-      ? firstInvalidElement.closest(formGroupSelector)
-      : null;
+  const firstInvalidElementWrapper =
+  elementWrapperSelector !== undefined &&
+    typeof firstInvalidElement.matches === "function"
+      ? closestInsideForm(firstInvalidElement, elementWrapperSelector, form)
+      : undefined;
 
   return focusAndScrollIntoViewIfRequired(
     firstInvalidElement,
-    formGroup || firstInvalidElement,
+    firstInvalidElementWrapper || firstInvalidElement,
     smoothScroll,
   );
 };

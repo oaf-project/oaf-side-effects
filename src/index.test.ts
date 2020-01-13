@@ -1,5 +1,6 @@
 import {
   announce,
+  closestInsideForm,
   elementFromHash,
   elementFromTarget,
   focusAndScrollIntoViewIfRequired,
@@ -383,5 +384,29 @@ describe("focusElement", () => {
 
     const result = await focusElement(document.body, true);
     expect(result).toBe(true);
+  });
+});
+
+describe("closestInsideForm", () => {
+  test("matches wrapper element inside form", () => {
+    const form = window.document.createElement("form");
+    const div = window.document.createElement("div");
+    const input = window.document.createElement("input");
+    form.appendChild(div);
+    div.appendChild(input);
+    window.document.body.appendChild(form);
+
+    expect(closestInsideForm(input, "div", form)).toBe(div);
+  });
+  
+  test("stops at form even when match exists above form", () => {
+    const div = window.document.createElement("div");
+    const form = window.document.createElement("form");
+    const input = window.document.createElement("input");
+    form.appendChild(input);
+    div.appendChild(form);
+    window.document.body.appendChild(div);
+
+    expect(closestInsideForm(input, "div", form)).toBeUndefined();
   });
 });
