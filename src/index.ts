@@ -612,7 +612,10 @@ export const focusInvalidForm = (
   const firstInvalidElement = elementFromTarget(invalidElementSelector, form);
 
   // Fall back on globalFormErrorElement if no firstInvalidElement found.
-  const globalFormErrorElement = firstInvalidElement === undefined && globalFormErrorSelector !== undefined ? elementFromTarget(globalFormErrorSelector, form) : undefined;
+  const globalFormErrorElement =
+    firstInvalidElement === undefined && globalFormErrorSelector !== undefined
+      ? elementFromTarget(globalFormErrorSelector, form)
+      : undefined;
 
   const elementToFocus = firstInvalidElement || globalFormErrorElement;
 
@@ -625,7 +628,8 @@ export const focusInvalidForm = (
   }
 
   const firstInvalidElementWrapper =
-    elementWrapperSelector !== undefined && firstInvalidElement !== undefined &&
+    elementWrapperSelector !== undefined &&
+    firstInvalidElement !== undefined &&
     typeof firstInvalidElement.matches === "function"
       ? closestInsideForm(firstInvalidElement, elementWrapperSelector, form)
       : undefined;

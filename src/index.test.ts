@@ -172,13 +172,23 @@ describe("focusAndScrollIntoViewIfRequired", () => {
 
 describe("focusInvalidForm", () => {
   test("doesn't throw if form doesn't exist", async () => {
-    await focusInvalidForm("form", "[aria-invalid=true]", ".form-group", "[role=alert]");
+    await focusInvalidForm(
+      "form",
+      "[aria-invalid=true]",
+      ".form-group",
+      "[role=alert]",
+    );
   });
 
   test("doesn't throw if invalid element doesn't exist", async () => {
     const form = document.createElement("form");
     document.body.appendChild(form);
-    await focusInvalidForm(form, "[aria-invalid=true]", ".form-group", "[role=alert]");
+    await focusInvalidForm(
+      form,
+      "[aria-invalid=true]",
+      ".form-group",
+      "[role=alert]",
+    );
   });
 
   test("focuses an invalid element", async () => {
@@ -189,7 +199,12 @@ describe("focusInvalidForm", () => {
     invalidInput.setAttribute("aria-invalid", "true");
     form.appendChild(invalidInput);
 
-    await focusInvalidForm(form, "[aria-invalid=true]", ".form-group", "[role=alert]");
+    await focusInvalidForm(
+      form,
+      "[aria-invalid=true]",
+      ".form-group",
+      "[role=alert]",
+    );
 
     expect(document.activeElement).toBe(invalidInput);
   });
@@ -202,7 +217,12 @@ describe("focusInvalidForm", () => {
     globalError.setAttribute("role", "alert");
     form.appendChild(globalError);
 
-    await focusInvalidForm(form, "[aria-invalid=true]", ".form-group", "[role=alert]");
+    await focusInvalidForm(
+      form,
+      "[aria-invalid=true]",
+      ".form-group",
+      "[role=alert]",
+    );
 
     expect(document.activeElement).toBe(globalError);
   });
@@ -218,7 +238,12 @@ describe("focusInvalidForm", () => {
     // @ts-ignore
     invalidInput.closest = undefined;
 
-    await focusInvalidForm(form, "[aria-invalid=true]", ".form-group", "[role=alert]");
+    await focusInvalidForm(
+      form,
+      "[aria-invalid=true]",
+      ".form-group",
+      "[role=alert]",
+    );
   });
 });
 
