@@ -589,12 +589,15 @@ export const closestInsideForm = (
  * @param elementWrapperSelector the CSS selector that matches the "wrapper" element--the closest ancestor of the form input--that contains
  *                               both the form input and its label.
  *                               This wrapper element will be scrolled into view so that both the invalid input and its label are visible.
+ * @param globalFormErrorSelector the CSS selector that matches the "global" form error, i.e. an element at the top of the form that contains
+ *                                an error message that isn't specific to a any given form input.
  * @param smoothScroll true for smooth scrolling, false otherwise
  */
 export const focusInvalidForm = (
   formTarget: Target,
   invalidElementSelector: Selector,
   elementWrapperSelector: Selector | undefined,
+  globalFormErrorSelector: Selector | undefined,
   smoothScroll: boolean = false,
 ): Promise<boolean> => {
   const form = elementFromTarget(formTarget);
@@ -608,7 +611,12 @@ export const focusInvalidForm = (
 
   const firstInvalidElement = elementFromTarget(invalidElementSelector, form);
 
-  if (firstInvalidElement === undefined) {
+  // Fall back on globalFormErrorElement if no firstInvalidElement found.
+  const globalFormErrorElement = firstInvalidElement === undefined && globalFormErrorSelector !== undefined ? elementFromTarget(globalFormErrorSelector, form) : undefined;
+
+  const elementToFocus = firstInvalidElement || globalFormErrorElement;
+
+  if (elementToFocus === undefined) {
     // TODO: In this case should we focus and scroll to the form itself?
     console.warn(
       `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
@@ -617,14 +625,14 @@ export const focusInvalidForm = (
   }
 
   const firstInvalidElementWrapper =
-    elementWrapperSelector !== undefined &&
+    elementWrapperSelector !== undefined && firstInvalidElement !== undefined &&
     typeof firstInvalidElement.matches === "function"
       ? closestInsideForm(firstInvalidElement, elementWrapperSelector, form)
       : undefined;
 
   return focusAndScrollIntoViewIfRequired(
-    firstInvalidElement,
-    firstInvalidElementWrapper || firstInvalidElement,
+    elementToFocus,
+    firstInvalidElementWrapper || elementToFocus,
     smoothScroll,
   );
 };
