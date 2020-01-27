@@ -22,7 +22,7 @@
     "tslint-immutable": "^6.0.1",
     "tslint-sonarts": "^1.9.0",
     "type-coverage": "^2.4.0",
-    "typedoc": "^0.16.8",
+    "typedoc": "^0.16.9",
     "typescript": "^3.7.5"
   },
   "scripts": {
