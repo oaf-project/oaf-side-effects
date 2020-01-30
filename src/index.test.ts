@@ -1,3 +1,15 @@
+/* eslint-disable jest/no-identical-title */
+/* eslint-disable sonarjs/no-identical-functions */
+/* eslint-disable functional/no-return-void */
+/* eslint-disable functional/no-throw-statement */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable sonarjs/no-duplicate-string */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable functional/immutable-data */
+/* eslint-disable functional/functional-parameters */
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable @typescript-eslint/unbound-method */
+
 import {
   announce,
   closestInsideForm,
@@ -15,14 +27,6 @@ import {
   setTitle,
 } from ".";
 
-// tslint:disable-next-line: no-commented-code
-// tslint:disable: no-expression-statement
-// tslint:disable: no-object-mutation
-// tslint:disable: readonly-array
-// tslint:disable: no-duplicate-string
-// tslint:disable: no-identical-functions
-// tslint:disable: no-throw
-
 // Keep references to the original values of these functions.
 const documentElementFocus = window.document.documentElement.focus;
 const bodyFocus = window.document.body.focus;
@@ -34,11 +38,9 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
 
   // js-dom doesn't implement scrollTo
-  // tslint:disable-next-line: no-empty
   window.scrollTo = () => {};
 
   // js-dom doesn't implement scrollIntoView
-  // tslint:disable-next-line: no-empty
   Element.prototype.scrollIntoView = () => {};
 
   // Restore these functions because some tests mess with them.
@@ -56,7 +58,10 @@ describe("elementFromHash", () => {
     expect(elementFromHash("#test-id")).toBe(div);
   });
 
-  const elementFromHashTable: ReadonlyArray<[Hash, HTMLElement | undefined]> = [
+  const elementFromHashTable: ReadonlyArray<readonly [
+    Hash,
+    HTMLElement | undefined,
+  ]> = [
     ["#", window.document.documentElement],
     ["#top", window.document.documentElement],
     ["", undefined],
@@ -96,6 +101,21 @@ describe("elementFromTarget", () => {
 describe("announce", () => {
   test("doesn't throw", async () => {
     await announce("hello");
+    expect(document.querySelector("#announcements")).not.toBeNull();
+    expect(document.querySelector("#announcements")!.getAttribute("role")).toBe(
+      "status",
+    );
+    expect(
+      document.querySelector("#announcements")!.getAttribute("aria-live"),
+    ).toBe("polite");
+    expect(
+      document.querySelector("#announcements")!.getAttribute("aria-atomic"),
+    ).toBe("true");
+    expect(
+      document.querySelector("#announcements")!.getAttribute("style"),
+    ).toBe(
+      "position: absolute; width: 1px; height: 1px; padding: 0px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px;",
+    );
   });
 });
 
@@ -121,19 +141,15 @@ describe("resetFocus", () => {
     window.document.body.appendChild(p);
 
     div.focus = () => {
-      // tslint:disable-next-line: no-string-throw
       throw "Expected error";
     };
     p.focus = () => {
-      // tslint:disable-next-line: no-string-throw
       throw "Expected error";
     };
     window.document.documentElement.focus = () => {
-      // tslint:disable-next-line: no-string-throw
       throw "Expected error";
     };
     window.document.body.focus = () => {
-      // tslint:disable-next-line: no-string-throw
       throw "Expected error";
     };
 
@@ -146,6 +162,7 @@ describe("resetFocus", () => {
 describe("focusAndScrollIntoViewIfRequired", () => {
   test("doesn't throw when focus and scroll elements are the same", async () => {
     await focusAndScrollIntoViewIfRequired("body", "body");
+    expect(document.activeElement).toBe(document.body);
   });
 
   test("doesn't throw when focus element doesn't exist", async () => {
@@ -154,6 +171,7 @@ describe("focusAndScrollIntoViewIfRequired", () => {
 
   test("doesn't throw when scroll element doesn't exist", async () => {
     await focusAndScrollIntoViewIfRequired("body", "does-not-exist");
+    expect(document.activeElement).toBe(document.body);
   });
 
   test("doesn't throw when focus and scroll elements are different", async () => {
@@ -163,32 +181,36 @@ describe("focusAndScrollIntoViewIfRequired", () => {
     document.body.appendChild(p);
 
     await focusAndScrollIntoViewIfRequired(div, p);
+    expect(document.activeElement).toBe(div);
   });
 
   test("doesn't throw when smooth scrolling", async () => {
     await focusAndScrollIntoViewIfRequired("body", "body", true);
+    expect(document.activeElement).toBe(document.body);
   });
 });
 
 describe("focusInvalidForm", () => {
   test("doesn't throw if form doesn't exist", async () => {
-    await focusInvalidForm(
+    const result = await focusInvalidForm(
       "form",
       "[aria-invalid=true]",
       ".form-group",
       "[role=alert]",
     );
+    expect(result).toBe(false);
   });
 
   test("doesn't throw if invalid element doesn't exist", async () => {
     const form = document.createElement("form");
     document.body.appendChild(form);
-    await focusInvalidForm(
+    const result = await focusInvalidForm(
       form,
       "[aria-invalid=true]",
       ".form-group",
       "[role=alert]",
     );
+    expect(result).toBe(false);
   });
 
   test("focuses an invalid element", async () => {
@@ -199,13 +221,14 @@ describe("focusInvalidForm", () => {
     invalidInput.setAttribute("aria-invalid", "true");
     form.appendChild(invalidInput);
 
-    await focusInvalidForm(
+    const result = await focusInvalidForm(
       form,
       "[aria-invalid=true]",
       ".form-group",
       "[role=alert]",
     );
 
+    expect(result).toBe(true);
     expect(document.activeElement).toBe(invalidInput);
   });
 
@@ -217,13 +240,14 @@ describe("focusInvalidForm", () => {
     globalError.setAttribute("role", "alert");
     form.appendChild(globalError);
 
-    await focusInvalidForm(
+    const result = await focusInvalidForm(
       form,
       "[aria-invalid=true]",
       ".form-group",
       "[role=alert]",
     );
 
+    expect(result).toBe(true);
     expect(document.activeElement).toBe(globalError);
   });
 
@@ -235,20 +259,23 @@ describe("focusInvalidForm", () => {
     invalidInput.setAttribute("aria-invalid", "true");
     form.appendChild(invalidInput);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     invalidInput.closest = undefined;
 
-    await focusInvalidForm(
+    const result = await focusInvalidForm(
       form,
       "[aria-invalid=true]",
       ".form-group",
       "[role=alert]",
     );
+
+    expect(result).toBe(true);
   });
 });
 
 describe("setTitle", () => {
-  const titles: ReadonlyArray<[string, string]> = [
+  const titles: ReadonlyArray<readonly [string, string]> = [
     ["hello", "hello"],
     ["", ""],
     [(null as unknown) as string, "null"],
@@ -283,7 +310,7 @@ describe("scrollIntoView", () => {
     document.body.appendChild(div);
 
     div.scrollIntoView = (options?: ScrollIntoViewOptions) => {
-      // tslint:disable-next-line: no-if-statement
+      // eslint-disable-next-line functional/no-conditional-statement
       if (options !== undefined && options.behavior === "smooth") {
         throw new Error("");
       }
@@ -299,13 +326,14 @@ describe("scrollIntoView", () => {
   });
 
   test("handles exception from scrollTo when smooth scrolling", () => {
-    const scrollTo = (options?: ScrollToOptions) => {
-      // tslint:disable-next-line: no-if-statement
+    const scrollTo = (options?: ScrollToOptions): void => {
+      // eslint-disable-next-line functional/no-conditional-statement
       if (options !== undefined && options.behavior === "smooth") {
         throw new Error("");
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     window.scrollTo = scrollTo;
 
@@ -379,7 +407,7 @@ describe("focusElement", () => {
 
     const originalFocus = div.focus;
     div.focus = options => {
-      // tslint:disable-next-line: no-if-statement
+      // eslint-disable-next-line functional/no-conditional-statement
       if (options !== undefined && options.preventScroll === true) {
         throw new Error("");
       } else {
@@ -398,7 +426,6 @@ describe("focusElement", () => {
     window.document.body.appendChild(div);
 
     div.focus = () => {
-      // tslint:disable: no-string-throw
       throw "Expected error";
     };
 
@@ -409,6 +436,7 @@ describe("focusElement", () => {
   });
 
   test("doesn't throw when window.getComputedStyle is undefined", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     window.getComputedStyle = undefined;
 
@@ -417,6 +445,7 @@ describe("focusElement", () => {
   });
 
   test("doesn't throw when smooth scroll set via CSS", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     window.getComputedStyle = () => ({ scrollBehavior: "smooth" });
 

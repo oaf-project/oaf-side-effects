@@ -1,9 +1,11 @@
-// tslint:disable: no-expression-statement
-// tslint:disable: no-object-mutation
-// tslint:disable: no-if-statement
-// tslint:disable: no-console
-// tslint:disable: interface-over-type-literal
-// tslint:disable: no-try
+/* eslint-disable functional/no-loop-statement */
+/* eslint-disable no-case-declarations */
+/* eslint-disable functional/immutable-data */
+/* eslint-disable functional/functional-parameters */
+/* eslint-disable functional/no-try-statement */
+/* eslint-disable functional/no-expression-statement */
+/* eslint-disable functional/no-conditional-statement */
+/* eslint-disable functional/no-return-void */
 
 /**
  * A CSS selector.
@@ -86,7 +88,6 @@ export const setTitle = (title: string): void => {
     );
   }
   document.title = title;
-  return;
 };
 
 /**
@@ -139,6 +140,19 @@ export const getScrollPosition = (): ScrollPosition => {
 };
 
 /**
+ * True if the user prefers reduced motion, false otherwise.
+ *
+ * See https://css-tricks.com/introduction-reduced-motion-media-query/
+ */
+export const prefersReducedMotion = (): boolean => {
+  // See https://caniuse.com/#feat=matchmedia
+  return (
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+};
+
+/**
  * Scrolls the window to the given scroll position.
  *
  * For smooth scrolling behavior you might want to use the smoothscroll
@@ -151,7 +165,7 @@ export const getScrollPosition = (): ScrollPosition => {
  */
 export const setScrollPosition = (
   scrollPosition: ScrollPosition,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
 ): void => {
   if (!smoothScroll || prefersReducedMotion()) {
     // Use old form of scrollTo() (when we can) to maximize browser compatibility.
@@ -250,7 +264,7 @@ const withRestoreScrollPosition = async <T>(
  */
 export const focusElement = async (
   target: Target,
-  preventScroll: boolean = false,
+  preventScroll = false,
 ): Promise<boolean> => {
   // See: https://developer.paciellogroup.com/blog/2014/08/using-the-tabindex-attribute/
   // See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#Browser_compatibility
@@ -278,7 +292,7 @@ export const focusElement = async (
       element.setAttribute("tabindex", "-1");
       // We remove tabindex after blur to avoid weird browser behavior
       // where a mouse click can activate elements with tabindex="-1".
-      const blurListener = () => {
+      const blurListener = (): void => {
         element.removeAttribute("tabindex");
         element.removeEventListener("blur", blurListener);
       };
@@ -312,19 +326,6 @@ export const focusElement = async (
 };
 
 /**
- * True if the user prefers reduced motion, false otherwise.
- *
- * See https://css-tricks.com/introduction-reduced-motion-media-query/
- */
-export const prefersReducedMotion = (): boolean => {
-  // See https://caniuse.com/#feat=matchmedia
-  return (
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-};
-
-/**
  * Scrolls an element into view.
  *
  * For smooth scrolling behavior you might want to use the smoothscroll
@@ -337,7 +338,7 @@ export const prefersReducedMotion = (): boolean => {
  */
 export const scrollIntoView = (
   element: Element,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
 ): void => {
   // TODO support ScrollIntoViewOptions and respect block and inline even when not smooth scrolling.
 
@@ -375,7 +376,7 @@ export const scrollIntoView = (
  */
 export const scrollIntoViewIfRequired = (
   target: Target,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
   inViewport: typeof isInViewport = isInViewport,
 ): void => {
   const element = elementFromTarget(target);
@@ -399,7 +400,7 @@ export const scrollIntoViewIfRequired = (
 export const focusAndScrollIntoViewIfRequired = async (
   focusTarget: Target,
   scrollIntoViewTarget: Target,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
 ): Promise<boolean> => {
   const elementToFocus = elementFromTarget(focusTarget);
   const elementToScrollIntoView =
@@ -452,7 +453,7 @@ export const focusAndScrollIntoViewIfRequired = async (
 export const resetFocus = async (
   primaryFocusTarget: Selector,
   focusTarget?: Target,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
 ): Promise<boolean> => {
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
@@ -468,6 +469,7 @@ export const resetFocus = async (
   for (const targetElement of targets) {
     if (targetElement instanceof Element) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         const didFocus = await focusAndScrollIntoViewIfRequired(
           targetElement,
           targetElement,
@@ -527,9 +529,9 @@ const createAnnounceDiv = (
  */
 export const announce = (
   message: string,
-  announcementsDivId: string = "announcements",
-  setMessageTimeout: number = 50,
-  clearMessageTimeout: number = 500,
+  announcementsDivId = "announcements",
+  setMessageTimeout = 50,
+  clearMessageTimeout = 500,
   politeness: Exclude<AriaLivePoliteness, "off"> = "polite",
 ): Promise<unknown> => {
   const announceDiv =
@@ -598,7 +600,7 @@ export const focusInvalidForm = (
   invalidElementSelector: Selector,
   elementWrapperSelector: Selector | undefined,
   globalFormErrorSelector: Selector | undefined,
-  smoothScroll: boolean = false,
+  smoothScroll = false,
 ): Promise<boolean> => {
   const form = elementFromTarget(formTarget);
 
