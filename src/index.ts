@@ -196,7 +196,7 @@ const getScrollPositionRestorer = (): (() => Promise<void>) => {
     // immediately after focus and then again in a setTimeout()--to prevent
     // Firefox from bouncing around the page. TODO: Revisit this.
     setScrollPosition(scrollPosition);
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         setScrollPosition(scrollPosition);
         resolve();
@@ -214,9 +214,13 @@ const disableSmoothScroll = (): (() => void) => {
       : [];
   const smoothScrollElements = scrollElements
     .filter(
-      e => e !== null && window.getComputedStyle(e).scrollBehavior === "smooth",
+      (e) =>
+        e !== null && window.getComputedStyle(e).scrollBehavior === "smooth",
     )
-    .map(e => ({ element: e, originalScrollBehavior: e.style.scrollBehavior }));
+    .map((e) => ({
+      element: e,
+      originalScrollBehavior: e.style.scrollBehavior,
+    }));
   smoothScrollElements.forEach(
     ({ element }) => (element.style.scrollBehavior = "auto"),
   );
@@ -537,14 +541,14 @@ export const announce = (
   const announceDiv =
     document.getElementById(announcementsDivId) ||
     createAnnounceDiv(announcementsDivId, politeness);
-  const p1 = new Promise(resolve => {
+  const p1 = new Promise((resolve) => {
     setTimeout(() => {
       announceDiv.innerText = message;
       resolve();
     }, setMessageTimeout);
   });
 
-  const p2 = new Promise(resolve => {
+  const p2 = new Promise((resolve) => {
     setTimeout(() => {
       announceDiv.innerText = "";
       resolve();

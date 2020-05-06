@@ -58,10 +58,9 @@ describe("elementFromHash", () => {
     expect(elementFromHash("#test-id")).toBe(div);
   });
 
-  const elementFromHashTable: ReadonlyArray<readonly [
-    Hash,
-    HTMLElement | undefined,
-  ]> = [
+  const elementFromHashTable: ReadonlyArray<
+    readonly [Hash, HTMLElement | undefined]
+  > = [
     ["#", window.document.documentElement],
     ["#top", window.document.documentElement],
     ["", undefined],
@@ -406,7 +405,7 @@ describe("focusElement", () => {
     window.document.body.appendChild(div);
 
     const originalFocus = div.focus;
-    div.focus = options => {
+    div.focus = (options) => {
       // eslint-disable-next-line functional/no-conditional-statement
       if (options !== undefined && options.preventScroll === true) {
         throw new Error("");
