@@ -470,22 +470,22 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stryker-mutator/api@^3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@stryker-mutator/api/-/api-3.2.3.tgz#f07762e455b9bffadcdfb0eeba9db65038614764"
-  integrity sha512-lveSUaBzEyrDS66zpw0grb9wdGrUi6EGaMkbFm7kuhqFCVj74hlrDAspfK/mQwo9A5t+RffXPpjoGB6Uytuptw==
+"@stryker-mutator/api@^3.2.3", "@stryker-mutator/api@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@stryker-mutator/api/-/api-3.2.4.tgz#e6c0be234f63a4e5c29f95b41084a1227ceffad4"
+  integrity sha512-WzeLrerYih+xi2HyUtSFKRJq23O4P3HZ669w42MS+q0ivxd953Hr+ZXNfuK6so3jXVzygt5hv3FTyEenm+w0Qg==
   dependencies:
     mutation-testing-report-schema "~1.3.0"
     surrial "~2.0.2"
     tslib "~2.0.0"
 
-"@stryker-mutator/core@^3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@stryker-mutator/core/-/core-3.2.3.tgz#ce51b08e6f7256a40c62cd8800f1d19432cb4bd4"
-  integrity sha512-b9HsfKy1ZHEOa93IOKVNt3Ur/7+bJZheiNfc8pNGMJXZhYql4KA6E8js1w6pDHAVmVx3ScYYyGVIWJPFd5/ZeA==
+"@stryker-mutator/core@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@stryker-mutator/core/-/core-3.2.4.tgz#859b98bd1aa92021b5a73b7b70d26feb80cb984f"
+  integrity sha512-bTPFctIx1iH0YPx0dJxfMfJKyxv9+NIONjEPfrZsJjaUoQFv787s9+bnzD/JUYCYoG6Hj7XjMFsFs97xI318yA==
   dependencies:
-    "@stryker-mutator/api" "^3.2.3"
-    "@stryker-mutator/util" "^3.2.3"
+    "@stryker-mutator/api" "^3.2.4"
+    "@stryker-mutator/util" "^3.2.4"
     ajv "^6.12.0"
     chalk "~4.0.0"
     commander "~5.1.0"
@@ -529,10 +529,10 @@
     semver "~6.3.0"
     tslib "~2.0.0"
 
-"@stryker-mutator/util@^3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@stryker-mutator/util/-/util-3.2.3.tgz#404a4a675a9fe77f0f6e66fe0f3e0237a1f98acc"
-  integrity sha512-yU6sK2SkAvOsbvrhHmFBpCtianjeMtI71x1Pgb2IEaO1i+ttybLDjg/jHFOKEO3ngC/HyB/1HwfJLwd1StVBgQ==
+"@stryker-mutator/util@^3.2.3", "@stryker-mutator/util@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@stryker-mutator/util/-/util-3.2.4.tgz#117aadfb3357774e903dcc45105b6db8f60ffbd5"
+  integrity sha512-s/yB6Ok0NZfGlQD1A/3BPdwCyS2YA5yQzIFNsFE8q/GqmMlZ5SjliEFNgp7u3LUYpqqBStmmz6qzP/PoL1BxqQ==
 
 "@tootallnate/once@1":
   version "1.1.2"
