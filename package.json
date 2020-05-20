@@ -27,7 +27,7 @@
     "ts-jest": "^26.0.0",
     "type-coverage": "^2.6.1",
     "typedoc": "^0.17.7",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
   },
   "scripts": {
     "build": "tsc",
