@@ -3,7 +3,6 @@
 [![Codecov](https://img.shields.io/codecov/c/github/oaf-project/oaf-side-effects.svg)](https://codecov.io/gh/oaf-project/oaf-side-effects)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/oaf-project/oaf-side-effects.svg)](https://lgtm.com/projects/g/oaf-project/oaf-side-effects/)
 [![Known Vulnerabilities](https://snyk.io/test/github/oaf-project/oaf-side-effects/badge.svg?targetFile=package.json)](https://snyk.io/test/github/oaf-project/oaf-side-effects?targetFile=package.json)
-[![Greenkeeper badge](https://badges.greenkeeper.io/oaf-project/oaf-side-effects.svg)](https://greenkeeper.io/)
 [![npm](https://img.shields.io/npm/v/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
 [![npm](https://img.shields.io/npm/dw/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
 [![dependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/status.svg)](https://david-dm.org/oaf-project/oaf-side-effects)
