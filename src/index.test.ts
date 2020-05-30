@@ -165,7 +165,11 @@ describe("focusAndScrollIntoViewIfRequired", () => {
   });
 
   test("doesn't throw when focus element doesn't exist", async () => {
-    await focusAndScrollIntoViewIfRequired("does-not-exist", "body");
+    const result = await focusAndScrollIntoViewIfRequired(
+      "does-not-exist",
+      "body",
+    );
+    expect(result).toBe(false);
   });
 
   test("doesn't throw when scroll element doesn't exist", async () => {
@@ -258,7 +262,7 @@ describe("focusInvalidForm", () => {
     invalidInput.setAttribute("aria-invalid", "true");
     form.appendChild(invalidInput);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     invalidInput.closest = undefined;
 
@@ -332,7 +336,7 @@ describe("scrollIntoView", () => {
       }
     };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.scrollTo = scrollTo;
 
@@ -435,7 +439,7 @@ describe("focusElement", () => {
   });
 
   test("doesn't throw when window.getComputedStyle is undefined", async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.getComputedStyle = undefined;
 
@@ -444,7 +448,7 @@ describe("focusElement", () => {
   });
 
   test("doesn't throw when smooth scroll set via CSS", async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.getComputedStyle = () => ({ scrollBehavior: "smooth" });
 

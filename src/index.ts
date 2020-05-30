@@ -278,13 +278,15 @@ export const focusElement = async (
   const element = elementFromTarget(target);
 
   if (element === undefined) {
-    console.warn(`Cannot focus element. Element [${target}] not found.`);
+    console.warn(
+      `Cannot focus element. Element [${target.toString()}] not found.`,
+    );
     return Promise.resolve(false);
   }
 
   if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
     console.warn(
-      `Cannot focus element. Element [${target}] is not an HTMLElement or SVGElement.`,
+      `Cannot focus element. Element [${target.toString()}] is not an HTMLElement or SVGElement.`,
     );
     return Promise.resolve(false);
   }
@@ -610,7 +612,7 @@ export const focusInvalidForm = (
 
   if (form === undefined) {
     console.warn(
-      `No form matching [${formTarget}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No form matching [${formTarget.toString()}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
@@ -628,7 +630,7 @@ export const focusInvalidForm = (
   if (elementToFocus === undefined) {
     // TODO: In this case should we focus and scroll to the form itself?
     console.warn(
-      `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget.toString()}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
