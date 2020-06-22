@@ -323,9 +323,11 @@ export const focusElement = async (
     }
 
     return document.activeElement === element;
+    // type-coverage:ignore-next-line
   } catch (e) {
     // Apparently trying to focus a disabled element in IE can throw.
     // See https://stackoverflow.com/a/1600194/2476884
+    // type-coverage:ignore-next-line
     console.error(e);
     return false;
   }
@@ -485,7 +487,9 @@ export const resetFocus = async (
         if (didFocus) {
           return true;
         }
+        // type-coverage:ignore-next-line
       } catch (e) {
+        // type-coverage:ignore-next-line
         console.error(e);
       }
     }
