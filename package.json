@@ -36,7 +36,7 @@
     "type-coverage": "type-coverage --strict --ignore-catch --detail --ignore-files \"src/index.test.ts\"",
     "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
     "documentation": "typedoc --excludeNotExported --excludePrivate --out docs src && cp docs_config.yml ./docs/_config.yml",
-    "release": "yarn build && yarn lint && yarn type-coverage --strict --ignore-catch --detail && yarn format-lint && yarn test && yarn publish && yarn documentation",
+    "release": "yarn build && yarn lint && yarn type-coverage --strict --ignore-catch --detail && yarn test && yarn publish && yarn documentation",
     "test": "jest"
   },
   "prettier": {
