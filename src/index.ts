@@ -323,11 +323,9 @@ export const focusElement = async (
     }
 
     return document.activeElement === element;
-    // type-coverage:ignore-next-line
   } catch (e) {
     // Apparently trying to focus a disabled element in IE can throw.
     // See https://stackoverflow.com/a/1600194/2476884
-    // type-coverage:ignore-next-line
     console.error(e);
     return false;
   }
@@ -487,9 +485,7 @@ export const resetFocus = async (
         if (didFocus) {
           return true;
         }
-        // type-coverage:ignore-next-line
       } catch (e) {
-        // type-coverage:ignore-next-line
         console.error(e);
       }
     }
@@ -564,6 +560,108 @@ export const announce = (
   return Promise.all([p1, p2]);
 };
 
+/* eslint-disable sonarjs/cognitive-complexity */
+
+/**
+ * Hide the on-screen keyboard on touch devices like iOS and Android.
+ *
+ * It's useful to do this after a form submission that doesn't navigate away from the
+ * current page but does update some part of the current page (e.g. dynamically updated
+ * search results). If you weren't to do this the user might not be shown any feedback
+ * in response to their action (form submission), because it is obscured by the keyboard.
+ *
+ * To hide the keyboard we temporarily set the active input or textarea to readonly and
+ * disabled. To avoid a flash of readonly/disabled styles (often a gray background) you
+ * can hook into the [data-oaf-keyboard-hack] html attribute. For example:
+ *
+ * ```
+ *  // Readonly/disabled styles shouldn't be applied when this attribute is present.
+ *  [data-oaf-keyboard-hack] {
+ *    background-color: $input-bg !important;
+ *  }
+ * ```
+ *
+ * Note that lots of people simply `blur()` the focused input to achieve this result
+ * but doing that is hostile to keyboard users and users of other AT.
+ *
+ * Do you need to use this?
+ *
+ * 1. If your form submission triggers a full page reload, you don't need this.
+ * 2. If your form submission explicitly moves focus to some other element, you
+ * don't need this. For example you might move focus to some new content that
+ * was loaded as a result of the form submission or to a loading message.
+ * 3. If your form submission leaves focus where it is, you probably want this.
+ */
+export const hideOnscreenKeyboard = (): Promise<void> => {
+  // TODO: use inputmode="none"?
+
+  // eslint-disable-next-line no-restricted-globals
+  const activeElement = document.activeElement;
+  const inputType =
+    activeElement instanceof HTMLInputElement
+      ? activeElement.getAttribute("type")
+      : undefined;
+
+  if (
+    activeElement !== null &&
+    activeElement instanceof HTMLElement &&
+    // Don't bother with input types that we know don't trigger an OSK.
+    inputType !== "checkbox" &&
+    inputType !== "radio" &&
+    inputType !== "submit" &&
+    inputType !== "reset" &&
+    inputType !== "button"
+  ) {
+    // Blur the active element to dismiss the on-screen keyboard.
+    activeElement.blur();
+
+    // Set an attribute that allows users to override readonly/disabled styles via CSS.
+    // This input will be readonly/disabled for only a fraction of a second and we
+    // want to avoid the flash of readonly/disabled styles.
+    activeElement.setAttribute("data-oaf-keyboard-hack", "true");
+
+    // Some older Android browsers need extra encouragement.
+    // See https://stackoverflow.com/a/11160055/2476884
+    const originalReadonly = activeElement.getAttribute("readonly");
+    const originalDisabled = activeElement.getAttribute("disabled");
+
+    // eslint-disable-next-line functional/immutable-data
+    activeElement.setAttribute("readonly", "true");
+    if (activeElement instanceof HTMLTextAreaElement) {
+      // eslint-disable-next-line functional/immutable-data
+      activeElement.setAttribute("disabled", "true");
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Put things back the way we found them.
+        originalReadonly !== null
+          ? activeElement.setAttribute("readonly", originalReadonly)
+          : activeElement.removeAttribute("readonly");
+
+        if (activeElement instanceof HTMLTextAreaElement) {
+          originalDisabled !== null
+            ? activeElement.setAttribute("disabled", originalDisabled)
+            : activeElement.removeAttribute("disabled");
+        }
+
+        activeElement.removeAttribute("data-oaf-keyboard-hack");
+
+        // Restore focus back to where it was. Lots of people forget to do this.
+        // Note that programmatically calling focus() will not trigger the
+        // on-screen keyboard to reemerge.
+        activeElement.focus();
+
+        resolve();
+      });
+    });
+  } else {
+    return Promise.resolve();
+  }
+};
+
+/* eslint-enable sonarjs/cognitive-complexity */
+
 /**
  * Like `closest()` but stops ascending the ancestor tree once it hits the specified form element.
  */
@@ -583,7 +681,8 @@ export const closestInsideForm = (
 
 /**
  * Focuses and scrolls into view the first invalid form element inside
- * a given form.
+ * a given form. Attempts to hide the onscreen keyboard on touch devices so that
+ * the validation message near the first invalid form element is visible on screen.
  *
  * Call this function after you have validated a form and identified errors.
  *
@@ -605,7 +704,7 @@ export const closestInsideForm = (
  *                                an error message that isn't specific to a any given form input.
  * @param smoothScroll true for smooth scrolling, false otherwise
  */
-export const focusInvalidForm = (
+export const focusInvalidForm = async (
   formTarget: Target,
   invalidElementSelector: Selector,
   elementWrapperSelector: Selector | undefined,
@@ -639,12 +738,25 @@ export const focusInvalidForm = (
     return Promise.resolve(false);
   }
 
+  // There's a common pitfall where focusing the invalid input scrolls the viewport back up
+  // only as far as the input, but the label remains just offscreen above the input (assuming the label
+  // is above the input and not beside it). At this point we're commonly below the input because
+  // we're at the bottom of the form where the submit button is, so this scenario is reasonably common.
+  // To avoid this we use a wrapper element that contains both the input and its label. We scroll the wrapper
+  // into view so the label is visible and then move focus to the input. If there is no wrapper we just
+  // scroll to the input itself.
   const firstInvalidElementWrapper =
     elementWrapperSelector !== undefined &&
     firstInvalidElement !== undefined &&
     typeof firstInvalidElement.matches === "function"
       ? closestInsideForm(firstInvalidElement, elementWrapperSelector, form)
       : undefined;
+
+  // If the invalid element that we're about to focus _already_ has focus, then the onscreen
+  // keyboard is likely to remain visible, which risks obscuring the validation message displayed
+  // near the invalid input. We try to trick the browser into hiding the onscreen keyboard to
+  // avoid this situation and give the validation message the best chance of being visible.
+  await hideOnscreenKeyboard();
 
   return focusAndScrollIntoViewIfRequired(
     elementToFocus,

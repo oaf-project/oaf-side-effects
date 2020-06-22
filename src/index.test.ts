@@ -25,6 +25,7 @@ import {
   scrollIntoViewIfRequired,
   setScrollPosition,
   setTitle,
+  hideOnscreenKeyboard,
 } from ".";
 
 // Keep references to the original values of these functions.
@@ -479,5 +480,39 @@ describe("closestInsideForm", () => {
     window.document.body.appendChild(div);
 
     expect(closestInsideForm(input, "div", form)).toBeUndefined();
+  });
+});
+
+describe("hideOnscreenKeyboard", () => {
+  test("restores focus to active input", async () => {
+    const form = window.document.createElement("form");
+    const div = window.document.createElement("div");
+    const input = window.document.createElement("input");
+    form.appendChild(div);
+    div.appendChild(input);
+    window.document.body.appendChild(form);
+    input.focus();
+
+    expect(document.activeElement).toBe(input);
+
+    await hideOnscreenKeyboard();
+
+    expect(document.activeElement).toBe(input);
+  });
+
+  test("restores focus to active text area", async () => {
+    const form = window.document.createElement("form");
+    const div = window.document.createElement("div");
+    const textarea = window.document.createElement("textarea");
+    form.appendChild(div);
+    div.appendChild(textarea);
+    window.document.body.appendChild(form);
+    textarea.focus();
+
+    expect(document.activeElement).toBe(textarea);
+
+    await hideOnscreenKeyboard();
+
+    expect(document.activeElement).toBe(textarea);
   });
 });
