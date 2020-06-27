@@ -625,10 +625,8 @@ export const hideOnscreenKeyboard = (): Promise<void> => {
     const originalReadonly = activeElement.getAttribute("readonly");
     const originalDisabled = activeElement.getAttribute("disabled");
 
-    // eslint-disable-next-line functional/immutable-data
     activeElement.setAttribute("readonly", "true");
     if (activeElement instanceof HTMLTextAreaElement) {
-      // eslint-disable-next-line functional/immutable-data
       activeElement.setAttribute("disabled", "true");
     }
 
