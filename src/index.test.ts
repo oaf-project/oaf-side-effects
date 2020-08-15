@@ -60,7 +60,9 @@ describe("elementFromHash", () => {
     expect(elementFromHash("#test-id")).toBe(div);
   });
 
-  const elementFromHashTable: ReadonlyArray<ReadonlyArray<any>> = [
+  const elementFromHashTable: ReadonlyArray<
+    readonly [Hash, HTMLElement | undefined]
+  > = [
     ["#", window.document.documentElement],
     ["#top", window.document.documentElement],
     ["", undefined],
@@ -278,7 +280,7 @@ describe("focusInvalidForm", () => {
 });
 
 describe("setTitle", () => {
-  const titles: ReadonlyArray<ReadonlyArray<string>> = [
+  const titles: ReadonlyArray<readonly [string, string]> = [
     ["hello", "hello"],
     ["", ""],
     [(null as unknown) as string, "null"],
