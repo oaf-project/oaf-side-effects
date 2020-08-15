@@ -352,7 +352,7 @@ describe("prefersReducedMotion", () => {
   });
 
   test("calls window.matchMedia appropriately", () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, total-functions/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     window.matchMedia = () => ({ matches: true } as MediaQueryList);
     expect(prefersReducedMotion()).toBe(true);
   });
