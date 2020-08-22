@@ -1,3 +1,5 @@
+// TODO waiting on https://github.com/prettier/prettier/issues/8882
+/* eslint-disable prettier/prettier */
 /* eslint-disable functional/no-loop-statement */
 /* eslint-disable no-case-declarations */
 /* eslint-disable functional/immutable-data */
@@ -323,7 +325,7 @@ export const focusElement = async (
     }
 
     return document.activeElement === element;
-  } catch (e) {
+  } catch (e: unknown) {
     // Apparently trying to focus a disabled element in IE can throw.
     // See https://stackoverflow.com/a/1600194/2476884
     console.error(e);
@@ -485,7 +487,7 @@ export const resetFocus = async (
         if (didFocus) {
           return true;
         }
-      } catch (e) {
+      } catch (e: unknown) {
         console.error(e);
       }
     }
