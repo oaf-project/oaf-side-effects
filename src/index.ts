@@ -1,5 +1,3 @@
-// TODO waiting on https://github.com/prettier/prettier/issues/8882
-/* eslint-disable prettier/prettier */
 /* eslint-disable functional/no-loop-statement */
 /* eslint-disable no-case-declarations */
 /* eslint-disable functional/immutable-data */
