@@ -55,6 +55,8 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
   switch (hash) {
     case "#":
       return (
+        // documentElement can in fact be undefined in some old browsers.
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         document.documentElement || document.body.parentElement || document.body
       );
     case "":
@@ -65,6 +67,8 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
         return element;
       } else if (hash === "#top") {
         return (
+          // documentElement can in fact be undefined in some old browsers.
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
           document.documentElement ||
           document.body.parentElement ||
           document.body
@@ -104,7 +108,11 @@ export const isInViewport = (element: Element): boolean => {
     rect.top >= 0 &&
     rect.left >= 0 &&
     rect.bottom <=
+      // innerHeight can in fact be undefined in some old browsers.
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       (window.innerHeight || document.documentElement.clientHeight) &&
+    // innerHeight can in fact be undefined in some old browsers.
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 };
@@ -132,8 +140,14 @@ export const elementFromTarget = (
 export const getScrollPosition = (): ScrollPosition => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollX#Notes
   const documentElement =
+    // documentElement can in fact be undefined in some old browsers.
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     document.documentElement || document.body.parentNode || document.body;
+  // scrollX can in fact be undefined in some old browsers.
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const x = window.scrollX || window.pageXOffset || documentElement.scrollLeft;
+  // scrollY can in fact be undefined in some old browsers.
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const y = window.scrollY || window.pageYOffset || documentElement.scrollTop;
 
   return { x, y };
@@ -410,7 +424,7 @@ export const focusAndScrollIntoViewIfRequired = async (
 ): Promise<boolean> => {
   const elementToFocus = elementFromTarget(focusTarget);
   const elementToScrollIntoView =
-    elementFromTarget(scrollIntoViewTarget) || elementToFocus;
+    elementFromTarget(scrollIntoViewTarget) ?? elementToFocus;
 
   // See https://css-tricks.com/smooth-scrolling-accessibility/
   // See https://github.com/whatwg/html/issues/834
@@ -541,7 +555,7 @@ export const announce = (
   politeness: Exclude<AriaLivePoliteness, "off"> = "polite",
 ): Promise<unknown> => {
   const announceDiv =
-    document.getElementById(announcementsDivId) ||
+    document.getElementById(announcementsDivId) ??
     createAnnounceDiv(announcementsDivId, politeness);
   const p1 = new Promise((resolve) => {
     setTimeout(() => {
@@ -726,7 +740,7 @@ export const focusInvalidForm = async (
       ? elementFromTarget(globalFormErrorSelector, form)
       : undefined;
 
-  const elementToFocus = firstInvalidElement || globalFormErrorElement;
+  const elementToFocus = firstInvalidElement ?? globalFormErrorElement;
 
   if (elementToFocus === undefined) {
     // TODO: In this case should we focus and scroll to the form itself?
@@ -758,7 +772,7 @@ export const focusInvalidForm = async (
 
   return focusAndScrollIntoViewIfRequired(
     elementToFocus,
-    firstInvalidElementWrapper || elementToFocus,
+    firstInvalidElementWrapper ?? elementToFocus,
     smoothScroll,
   );
 };
