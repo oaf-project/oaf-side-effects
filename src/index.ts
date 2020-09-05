@@ -56,7 +56,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
     case "#":
       return (
         // documentElement can in fact be undefined in some old browsers.
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
         document.documentElement || document.body.parentElement || document.body
       );
     case "":
@@ -68,7 +68,7 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
       } else if (hash === "#top") {
         return (
           // documentElement can in fact be undefined in some old browsers.
-          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
           document.documentElement ||
           document.body.parentElement ||
           document.body
@@ -141,7 +141,7 @@ export const getScrollPosition = (): ScrollPosition => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollX#Notes
   const documentElement =
     // documentElement can in fact be undefined in some old browsers.
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
     document.documentElement || document.body.parentNode || document.body;
   // scrollX can in fact be undefined in some old browsers.
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -219,22 +219,25 @@ const getScrollPositionRestorer = (): (() => Promise<void>) => {
   };
 };
 
+const isNotNull = <A>(a: A): a is Exclude<A, null> => a !== null;
+
 const disableSmoothScroll = (): (() => void) => {
   // See https://caniuse.com/#search=css-scroll-behavior
   // See https://caniuse.com/#search=getcomputedstyle
-  const scrollElements =
+  // documentElement can be null in older browsers.
+  const scrollElements: ReadonlyArray<HTMLElement | null> =
     typeof window.getComputedStyle === "function"
       ? [window.document.documentElement, window.document.body]
       : [];
+
   const smoothScrollElements = scrollElements
-    .filter(
-      (e) =>
-        e !== null && window.getComputedStyle(e).scrollBehavior === "smooth",
-    )
+    .filter(isNotNull)
+    .filter((e) => window.getComputedStyle(e).scrollBehavior === "smooth")
     .map((e) => ({
       element: e,
       originalScrollBehavior: e.style.scrollBehavior,
     }));
+
   smoothScrollElements.forEach(
     ({ element }) => (element.style.scrollBehavior = "auto"),
   );
@@ -293,6 +296,8 @@ export const focusElement = async (
 
   if (element === undefined) {
     console.warn(
+      // TODO fix this
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `Cannot focus element. Element [${target.toString()}] not found.`,
     );
     return Promise.resolve(false);
@@ -300,6 +305,8 @@ export const focusElement = async (
 
   if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
     console.warn(
+      // TODO fix this
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `Cannot focus element. Element [${target.toString()}] is not an HTMLElement or SVGElement.`,
     );
     return Promise.resolve(false);
@@ -727,6 +734,8 @@ export const focusInvalidForm = async (
 
   if (form === undefined) {
     console.warn(
+      // TODO fix this
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `No form matching [${formTarget.toString()}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
@@ -745,6 +754,8 @@ export const focusInvalidForm = async (
   if (elementToFocus === undefined) {
     // TODO: In this case should we focus and scroll to the form itself?
     console.warn(
+      // TODO fix this
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget.toString()}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
