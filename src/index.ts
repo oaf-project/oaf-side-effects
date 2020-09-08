@@ -7,6 +7,8 @@
 /* eslint-disable functional/no-conditional-statement */
 /* eslint-disable functional/no-return-void */
 
+import type { ExcludeStrict } from "type-zoo";
+
 /**
  * A CSS selector.
  */
@@ -219,7 +221,8 @@ const getScrollPositionRestorer = (): (() => Promise<void>) => {
   };
 };
 
-const isNotNull = <A>(a: A): a is Exclude<A, null> => a !== null;
+const isNotNull = <A>(a: A): a is null extends A ? ExcludeStrict<A, null> : A =>
+  a !== null;
 
 const disableSmoothScroll = (): (() => void) => {
   // See https://caniuse.com/#search=css-scroll-behavior
@@ -517,7 +520,7 @@ export const resetFocus = async (
 
 const createAnnounceDiv = (
   id: string,
-  politeness: Exclude<AriaLivePoliteness, "off">,
+  politeness: ExcludeStrict<AriaLivePoliteness, "off">,
 ): HTMLDivElement => {
   const div = document.createElement("div");
 
@@ -559,7 +562,7 @@ export const announce = (
   announcementsDivId = "announcements",
   setMessageTimeout = 50,
   clearMessageTimeout = 500,
-  politeness: Exclude<AriaLivePoliteness, "off"> = "polite",
+  politeness: ExcludeStrict<AriaLivePoliteness, "off"> = "polite",
 ): Promise<unknown> => {
   const announceDiv =
     document.getElementById(announcementsDivId) ??
