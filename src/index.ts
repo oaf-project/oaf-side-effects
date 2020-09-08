@@ -233,7 +233,10 @@ const disableSmoothScroll = (): (() => void) => {
       ? [window.document.documentElement, window.document.body]
       : [];
 
-  const smoothScrollElements = scrollElements
+  const smoothScrollElements: ReadonlyArray<{
+    readonly element: HTMLElement;
+    readonly originalScrollBehavior: string;
+  }> = scrollElements
     .filter(isNotNull)
     .filter((e) => window.getComputedStyle(e).scrollBehavior === "smooth")
     .map((e) => ({
