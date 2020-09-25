@@ -573,14 +573,14 @@ export const announce = (
   const p1 = new Promise((resolve) => {
     setTimeout(() => {
       announceDiv.innerText = message;
-      resolve();
+      resolve(undefined);
     }, setMessageTimeout);
   });
 
   const p2 = new Promise((resolve) => {
     setTimeout(() => {
       announceDiv.innerText = "";
-      resolve();
+      resolve(undefined);
     }, clearMessageTimeout);
   });
 
