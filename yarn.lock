@@ -4818,10 +4818,10 @@ typedoc@^0.19.2:
     shelljs "^0.8.4"
     typedoc-default-themes "^0.11.4"
 
-typescript@^4.1.0-beta:
-  version "4.1.0-dev.20201011"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.0-dev.20201011.tgz#cf671aeef05c7af2f930e69f3afae8c30114bb3f"
-  integrity sha512-+Lfj2Q+dXFAJbfB1jQQRlhTssgl0CQVo8a+CNzlNXsnC1cN1yoH40wkEjWd6uB8NGkamxKda1xrEb2miJtpP5g==
+typescript@^4.1.0-dev.20201025:
+  version "4.1.0-dev.20201025"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.0-dev.20201025.tgz#817d8ba47cdf72e3096ec4f126cd43e8b32fdd2f"
+  integrity sha512-JIYTkDadjkqGl1ZgD9GhoBQdJ8LIDLvUtwqhOC7F8NHwlPSenL6mKDtV3IQ5k18UpBZD+Xwk58ncwU47UyMyxw==
 
 uglify-js@^3.1.4:
   version "3.11.1"
