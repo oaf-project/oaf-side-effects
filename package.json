@@ -10,7 +10,7 @@
   "devDependencies": {
     "@stryker-mutator/core": "^4.0.0",
     "@stryker-mutator/jest-runner": "^4.0.0",
-    "@stryker-mutator/typescript-checker": "^4.0.0",
+    "@stryker-mutator/typescript-checker": "^4.1.1",
     "@types/jest": "^26.0.14",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/experimental-utils": "^4.4.1",
