@@ -39,9 +39,6 @@ beforeEach(() => {
   // Clear previous test's DOM.
   window.document.body.innerHTML = "";
 
-  // js-dom doesn't implement scrollTo
-  window.scrollTo = () => {};
-
   // js-dom doesn't implement scrollIntoView
   Element.prototype.scrollIntoView = () => {};
 
@@ -67,12 +64,12 @@ describe("elementFromHash", () => {
     ["#top", window.document.documentElement],
     ["", undefined],
     ["a", undefined],
-    [(null as unknown) as Hash, undefined],
-    [(undefined as unknown) as Hash, undefined],
-    [(true as unknown) as Hash, undefined],
-    [(1 as unknown) as Hash, undefined],
-    [({} as unknown) as Hash, undefined],
-    [([] as unknown) as Hash, undefined],
+    [null as unknown as Hash, undefined],
+    [undefined as unknown as Hash, undefined],
+    [true as unknown as Hash, undefined],
+    [1 as unknown as Hash, undefined],
+    [{} as unknown as Hash, undefined],
+    [[] as unknown as Hash, undefined],
   ];
 
   describe.each(elementFromHashTable)(
@@ -283,12 +280,12 @@ describe("setTitle", () => {
   const titles: ReadonlyArray<readonly [string, string]> = [
     ["hello", "hello"],
     ["", ""],
-    [(null as unknown) as string, "null"],
-    [(undefined as unknown) as string, "undefined"],
-    [(true as unknown) as string, "true"],
-    [(1 as unknown) as string, "1"],
-    [({} as unknown) as string, "[object Object]"],
-    [([] as unknown) as string, ""],
+    [null as unknown as string, "null"],
+    [undefined as unknown as string, "undefined"],
+    [true as unknown as string, "true"],
+    [1 as unknown as string, "1"],
+    [{} as unknown as string, "[object Object]"],
+    [[] as unknown as string, ""],
   ];
 
   describe.each(titles)("sets the document title", (title, expected) => {
