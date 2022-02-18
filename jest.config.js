@@ -11,8 +11,8 @@ module.exports = {
     "global": {
       "branches": 85.71,
       "functions": 100,
-      "lines": 98.04,
-      "statements": 98.1
+      "lines": 97,
+      "statements": 98
     }
   },
   // We mess with globals (window, document) in the tests so
