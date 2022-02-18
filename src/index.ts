@@ -203,57 +203,11 @@ export const setScrollPosition = (
   }
 };
 
-const getScrollPositionRestorer = (): (() => Promise<void>) => {
+const getScrollPositionRestorer = (): (() => void) => {
   const scrollPosition = getScrollPosition();
 
   return () => {
-    // See https://github.com/calvellido/focus-options-polyfill/blob/master/index.js
-    // HACK: It seems that we have to call window.scrollTo() twice--once
-    // immediately after focus and then again in a setTimeout()--to prevent
-    // Firefox from bouncing around the page. TODO: Revisit this.
     setScrollPosition(scrollPosition);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        setScrollPosition(scrollPosition);
-        resolve();
-      });
-    });
-  };
-};
-
-const isNotNull = <A>(a: A): a is null extends A ? ExcludeStrict<A, null> : A =>
-  a !== null;
-
-const disableSmoothScroll = (): (() => void) => {
-  // See https://caniuse.com/#search=css-scroll-behavior
-  // See https://caniuse.com/#search=getcomputedstyle
-  // documentElement can be null in older browsers.
-  const scrollElements: ReadonlyArray<HTMLElement | null> =
-    typeof window.getComputedStyle === "function"
-      ? [window.document.documentElement, window.document.body]
-      : [];
-
-  const smoothScrollElements: ReadonlyArray<{
-    readonly element: HTMLElement;
-    readonly originalScrollBehavior: string;
-  }> = scrollElements
-    .filter(isNotNull)
-    .filter((e) => window.getComputedStyle(e).scrollBehavior === "smooth")
-    .map((e) => ({
-      element: e,
-      originalScrollBehavior: e.style.scrollBehavior,
-    }));
-
-  smoothScrollElements.forEach(
-    ({ element }) => (element.style.scrollBehavior = "auto"),
-  );
-
-  // Return a function that will put things back the way we found them.
-  return () => {
-    smoothScrollElements.forEach(
-      ({ element, originalScrollBehavior }) =>
-        (element.style.scrollBehavior = originalScrollBehavior),
-    );
   };
 };
 
@@ -262,24 +216,10 @@ const disableSmoothScroll = (): (() => void) => {
  * and then restores the window scroll position and scroll behavior.
  * @param funcWithScrollSideEffect a function to execute that may (undesirably) change the window's scroll position
  */
-const withRestoreScrollPosition = async <T>(
-  funcWithScrollSideEffect: () => T,
-): Promise<T> => {
+const withRestoreScrollPosition = <T>(funcWithScrollSideEffect: () => T): T => {
   const restoreScrollPosition = getScrollPositionRestorer();
-
-  // Just in case `scroll-behavior: smooth` is set via CSS, set it to auto
-  // temporarily to help ensure that the scrolling caused by
-  // `funcWithScrollSideEffect` and `restoreScrollPosition` is imperceptible.
-  // This is not required in Chrome but it is in Firefox and perhaps elsewhere.
-  const restoreScrollBehavior = disableSmoothScroll();
-
   const result = funcWithScrollSideEffect();
-
-  await restoreScrollPosition();
-
-  // After we're done scrolling set scrollBehavior back to its original value.
-  restoreScrollBehavior();
-
+  restoreScrollPosition();
   return result;
 };
 
@@ -334,9 +274,10 @@ export const focusElement = async (
 
     if (preventScroll) {
       // preventScroll has poor browser support, so we restore scroll manually after setting focus.
+      // see https://caniuse.com/#feat=mdn-api_htmlelement_focus_preventscroll_option
       // TODO detect if browser supports preventScroll and avoid `withRestoreScrollPosition`
       // shenanigans if so.
-      await withRestoreScrollPosition(() => {
+      withRestoreScrollPosition(() => {
         try {
           element.focus({ preventScroll: true });
         } catch {
