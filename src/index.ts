@@ -563,7 +563,6 @@ export const announce = (
 export const hideOnscreenKeyboard = (): Promise<void> => {
   // TODO: use inputmode="none"?
 
-  // eslint-disable-next-line no-restricted-globals
   const activeElement = document.activeElement;
   const inputType =
     activeElement instanceof HTMLInputElement

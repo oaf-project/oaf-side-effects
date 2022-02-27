@@ -32,7 +32,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src --ext .ts --report-unused-disable-directives",
     "type-coverage": "type-coverage --ignore-files \"src/index.test.ts\"",
     "format": "prettier --write '{src,test}/**/*.{ts,tsx}'",
     "release": "yarn build && yarn lint && yarn type-coverage && yarn test && yarn publish",
