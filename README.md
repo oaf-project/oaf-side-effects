@@ -6,9 +6,6 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/oaf-project/oaf-side-effects/badge.svg?targetFile=package.json)](https://snyk.io/test/github/oaf-project/oaf-side-effects?targetFile=package.json)
 [![npm](https://img.shields.io/npm/v/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
 [![npm](https://img.shields.io/npm/dw/oaf-side-effects.svg)](https://www.npmjs.com/package/oaf-side-effects)
-[![dependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/status.svg)](https://david-dm.org/oaf-project/oaf-side-effects)
-[![devDependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/dev-status.svg)](https://david-dm.org/oaf-project/oaf-side-effects?type=dev)
-[![peerDependencies Status](https://david-dm.org/oaf-project/oaf-side-effects/peer-status.svg)](https://david-dm.org/oaf-project/oaf-side-effects?type=peer)
 
 # Oaf Side Effects
 
