@@ -473,15 +473,15 @@ const createAnnounceDiv = (
   div.setAttribute("aria-live", politeness);
   div.setAttribute("aria-atomic", "true");
 
-  // As per Bootstrap's sr-only styles.
+  // As per Bootstrap's visually-hidden styles.
   // See: https://a11yproject.com/posts/how-to-hide-content/
   // See: https://hugogiraudel.com/2016/10/13/css-hide-and-seek/
-  // See: https://getbootstrap.com/docs/4.3/getting-started/accessibility/#visually-hidden-content
-  // See: https://github.com/twbs/bootstrap/blob/ff29c1224c20b8fcf2d1e7c28426470f1dc3e40d/scss/mixins/_screen-reader.scss#L6
+  // See: https://github.com/twbs/bootstrap/blob/1df098361cac04217d6a464c80e890c4335ecb5c/scss/mixins/_visually-hidden.scss#L8-L18
   div.style.position = "absolute";
   div.style.width = "1px";
   div.style.height = "1px";
   div.style.padding = "0";
+  div.style.margin = "-1px";
   div.style.overflow = "hidden";
   div.style.clip = "rect(0, 0, 0, 0)";
   div.style.whiteSpace = "nowrap";
