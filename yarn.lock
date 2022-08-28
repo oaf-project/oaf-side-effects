@@ -1831,10 +1831,10 @@ eslint-plugin-functional@^4.2.0:
     deepmerge-ts "^2.0.1"
     escape-string-regexp "^4.0.0"
 
-eslint-plugin-jest@^26.1.1:
-  version "26.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-26.1.1.tgz#7176dd745ef8bca3070263f62cdf112f2dfc9aa1"
-  integrity sha512-HRKOuPi5ADhza4ZBK5ufyNXy28bXXkib87w+pQqdvBhSTsamndh6sIAKPAUl8y0/n9jSWBdTPslrwtKWqkp8dA==
+eslint-plugin-jest@^27.0.0:
+  version "27.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-27.0.0.tgz#fafe827d6be5c1172068b6ad85f0faa4a27cbc7e"
+  integrity sha512-z+xyBosph1kSffGEbsDz4EgdzRnpdKzrPHgVtiQ9hcZsTKl8EOo6yLhNn55tGfJSEmJdEVqpXv1g+ZmTbT9rEQ==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
 
