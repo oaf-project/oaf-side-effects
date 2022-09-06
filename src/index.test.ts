@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 /* eslint-disable jest/no-identical-title */
-/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable functional/no-return-void */
 /* eslint-disable functional/no-throw-statement */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
