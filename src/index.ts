@@ -7,7 +7,17 @@
 /* eslint-disable functional/no-conditional-statement */
 /* eslint-disable functional/no-return-void */
 
-import type { ExcludeStrict } from "type-zoo";
+// `ExcludeStrict` from https://github.com/pelotom/type-zoo
+// Copyright (c) 2017 Thomas Crockett
+// MIT License
+/**
+ * Exclude from `T` those types that are assignable to `U`, where `U` must exist in `T`.
+ *
+ * Similar to `Exclude` but requires the exclusion list to be composed of valid members of `T`.
+ *
+ * @see https://github.com/pelotom/type-zoo/issues/37
+ */
+export type ExcludeStrict<T, U extends T> = T extends U ? never : T;
 
 /**
  * A CSS selector.

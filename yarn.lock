@@ -4368,11 +4368,6 @@ type-fest@^1.0.2:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.4.0.tgz#e9fb813fe3bf1744ec359d55d1affefa76f14be1"
   integrity sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==
 
-type-zoo@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/type-zoo/-/type-zoo-3.4.1.tgz#5b1e8ba0ad87445092eb5ba033f1a4db800a0eec"
-  integrity sha512-jwdBsJmFK9QJdD5Hb0ovFYl5Kz8SLfzNiNmPNRZYA+B9O22MiQma2qG39JBap/FSDWuPUJP9ISlf7kV8h82+FA==
-
 typed-inject@~3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/typed-inject/-/typed-inject-3.0.1.tgz#edd396d3e98ae27dd2f3a209bfee2ad2d447ac5f"
