@@ -46,6 +46,9 @@ export type Target = Element | Selector;
  */
 export type ScrollPosition = { readonly x: number; readonly y: number };
 
+export const targetToString = (target: Target): string =>
+  typeof target === "string" ? target : target.nodeName.toLowerCase();
+
 /**
  * Maps from a URL hash fragment to a target element.
  *
@@ -252,18 +255,16 @@ export const focusElement = async (
 
   if (element === undefined) {
     console.warn(
-      // TODO fix this
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      `Cannot focus element. Element [${target.toString()}] not found.`,
+      `Cannot focus element. Element [${targetToString(target)}] not found.`,
     );
     return Promise.resolve(false);
   }
 
   if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
     console.warn(
-      // TODO fix this
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      `Cannot focus element. Element [${target.toString()}] is not an HTMLElement or SVGElement.`,
+      `Cannot focus element. Element [${targetToString(
+        target,
+      )}] is not an HTMLElement or SVGElement.`,
     );
     return Promise.resolve(false);
   }
@@ -689,9 +690,9 @@ export const focusInvalidForm = async (
 
   if (form === undefined) {
     console.warn(
-      // TODO fix this
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      `No form matching [${formTarget.toString()}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No form matching [${targetToString(
+        formTarget,
+      )}] found in document. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
@@ -709,9 +710,11 @@ export const focusInvalidForm = async (
   if (elementToFocus === undefined) {
     // TODO: In this case should we focus and scroll to the form itself?
     console.warn(
-      // TODO fix this
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      `No invalid form element matching [${invalidElementSelector}] found inside form [${formTarget.toString()}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
+      `No invalid form element matching [${targetToString(
+        invalidElementSelector,
+      )}] found inside form [${targetToString(
+        formTarget,
+      )}]. Users of keyboards, screen readers and other assistive technology will have a degraded experience.`,
     );
     return Promise.resolve(false);
   }
