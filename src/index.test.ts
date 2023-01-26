@@ -56,9 +56,10 @@ describe("elementFromHash", () => {
     expect(elementFromHash("#test-id")).toBe(div);
   });
 
-  const elementFromHashTable: ReadonlyArray<
-    readonly [Hash, HTMLElement | undefined]
-  > = [
+  const elementFromHashTable: readonly (readonly [
+    Hash,
+    HTMLElement | undefined,
+  ])[] = [
     ["#", window.document.documentElement],
     ["#top", window.document.documentElement],
     ["", undefined],
@@ -261,7 +262,7 @@ describe("focusInvalidForm", () => {
     form.appendChild(invalidInput);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     invalidInput.closest = undefined;
 
     const result = await focusInvalidForm(
@@ -276,7 +277,7 @@ describe("focusInvalidForm", () => {
 });
 
 describe("setTitle", () => {
-  const titles: ReadonlyArray<readonly [string, string]> = [
+  const titles: readonly (readonly [string, string])[] = [
     ["hello", "hello"],
     ["", ""],
     [null as unknown as string, "null"],
@@ -335,7 +336,7 @@ describe("scrollIntoView", () => {
     };
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     window.scrollTo = scrollTo;
 
     setScrollPosition({ x: 0, y: 0 }, true);
@@ -438,7 +439,7 @@ describe("focusElement", () => {
 
   test("doesn't throw when window.getComputedStyle is undefined", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     window.getComputedStyle = undefined;
 
     const result = await focusElement(document.body, true);
@@ -447,7 +448,7 @@ describe("focusElement", () => {
 
   test("doesn't throw when smooth scroll set via CSS", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     window.getComputedStyle = () => ({ scrollBehavior: "smooth" });
 
     const result = await focusElement(document.body, true);

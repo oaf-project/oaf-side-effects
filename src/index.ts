@@ -68,8 +68,8 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
     case "#":
       return (
         // documentElement can in fact be undefined in some old browsers.
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
-        document.documentElement || document.body.parentElement || document.body
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        document.documentElement ?? document.body.parentElement ?? document.body
       );
     case "":
       return undefined;
@@ -80,9 +80,9 @@ export const elementFromHash = (hash: Hash): Element | undefined => {
       } else if (hash === "#top") {
         return (
           // documentElement can in fact be undefined in some old browsers.
-          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
-          document.documentElement ||
-          document.body.parentElement ||
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          document.documentElement ??
+          document.body.parentElement ??
           document.body
         );
       } else {
@@ -121,11 +121,11 @@ export const isInViewport = (element: Element): boolean => {
     rect.left >= 0 &&
     rect.bottom <=
       // innerHeight can in fact be undefined in some old browsers.
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      (window.innerHeight || document.documentElement.clientHeight) &&
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      (window.innerHeight ?? document.documentElement.clientHeight) &&
     // innerHeight can in fact be undefined in some old browsers.
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    rect.right <= (window.innerWidth ?? document.documentElement.clientWidth)
   );
 };
 
@@ -153,14 +153,14 @@ export const getScrollPosition = (): ScrollPosition => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollX#Notes
   const documentElement =
     // documentElement can in fact be undefined in some old browsers.
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unnecessary-condition
-    document.documentElement || document.body.parentNode || document.body;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    document.documentElement ?? document.body.parentNode ?? document.body;
   // scrollX can in fact be undefined in some old browsers.
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  const x = window.scrollX || window.pageXOffset || documentElement.scrollLeft;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const x = window.scrollX ?? window.pageXOffset ?? documentElement.scrollLeft;
   // scrollY can in fact be undefined in some old browsers.
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  const y = window.scrollY || window.pageYOffset || documentElement.scrollTop;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const y = window.scrollY ?? window.pageYOffset ?? documentElement.scrollTop;
 
   return { x, y };
 };
@@ -442,14 +442,13 @@ export const resetFocus = async (
   const elementToFocus =
     focusTarget !== undefined ? elementFromTarget(focusTarget) : undefined;
   const primaryFocusElement = elementFromTarget(primaryFocusTarget);
-  const targets: ReadonlyArray<Element | undefined> = [
+  const targets: readonly (Element | undefined)[] = [
     elementToFocus,
     primaryFocusElement,
     document.documentElement,
     document.body,
   ];
 
-  // tslint:disable-next-line: no-loop-statement
   for (const targetElement of targets) {
     if (targetElement instanceof Element) {
       try {
