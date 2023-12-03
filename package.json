@@ -8,9 +8,9 @@
     "url": "https://github.com/oaf-project/oaf-side-effects.git"
   },
   "devDependencies": {
-    "@stryker-mutator/core": "^6.3.1",
-    "@stryker-mutator/jest-runner": "^6.3.1",
-    "@stryker-mutator/typescript-checker": "^6.3.1",
+    "@stryker-mutator/core": "^8.0.0",
+    "@stryker-mutator/jest-runner": "^8.0.0",
+    "@stryker-mutator/typescript-checker": "^8.0.0",
     "@types/jest": "^29.4.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/experimental-utils": "^5.49.0",
